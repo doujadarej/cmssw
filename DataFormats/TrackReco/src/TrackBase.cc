@@ -18,7 +18,6 @@ std::string const TrackBase::algoNames[] = {
     "mixedTripletStep",
     "pixelLessStep",
     "tobTecStep",
-    "siStripTripletStep",
     "jetCoreRegionalStep",
     "conversionStep",
     "muonSeededStepInOut",
@@ -53,7 +52,8 @@ std::string const TrackBase::algoNames[] = {
     "hiRegitMuPixelLessStep",
     "hiRegitMuTobTecStep",
     "hiRegitMuMuonSeededStepInOut",
-    "hiRegitMuMuonSeededStepOutIn"
+    "hiRegitMuMuonSeededStepOutIn",
+    "siStripTripletStep"
 };
 
 std::string const TrackBase::qualityNames[] = {
