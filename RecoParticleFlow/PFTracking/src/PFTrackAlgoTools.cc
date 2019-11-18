@@ -22,6 +22,7 @@ namespace PFTrackAlgoTools {
       return cuts[3];
     case reco::TrackBase::tobTecStep:
     case reco::TrackBase::siStripTripletStep:
+    case reco::TrackBase::siStripTripletStep2:
       return cuts[4];
     case reco::TrackBase::muonSeededStepInOut:
     case reco::TrackBase::muonSeededStepOutIn:
@@ -64,6 +65,7 @@ namespace PFTrackAlgoTools {
       return cuts[3];
     case reco::TrackBase::tobTecStep:
     case reco::TrackBase::siStripTripletStep:
+    case reco::TrackBase::siStripTripletStep2:
       return cuts[4];
     case reco::TrackBase::muonSeededStepInOut:
     case reco::TrackBase::muonSeededStepOutIn:
@@ -112,6 +114,7 @@ namespace PFTrackAlgoTools {
       return errorScale[0];
     case reco::TrackBase::tobTecStep:
     case reco::TrackBase::siStripTripletStep:
+    case reco::TrackBase::siStripTripletStep2:
       return errorScale[1];
     default:
       return 1E9;
@@ -192,6 +195,7 @@ bool isFifthStep(const reco::TrackBase::TrackAlgorithm& algo){
   case reco::TrackBase::hltIter4:
   case reco::TrackBase::hltIterX:
   case reco::TrackBase::siStripTripletStep:
+  case reco::TrackBase::siStripTripletStep2:
     return false;
   case reco::TrackBase::tobTecStep:
     return true;

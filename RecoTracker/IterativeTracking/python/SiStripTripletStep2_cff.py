@@ -3,19 +3,19 @@ from Configuration.Eras.Modifier_tracker_apv_vfp30_2016_cff import tracker_apv_v
 import RecoTracker.IterativeTracking.iterativeTkConfig as _cfg
 
 #----------------------------------------- NEW CLUSTERS (remove previously used clusters)
-siStripTripletStepClusters = _cfg.clusterRemoverForIter("SiStripTripletStep")
+siStripTripletStep2Clusters = _cfg.clusterRemoverForIter("SiStripTripletStep2")
 for _eraName, _postfix, _era in _cfg.nonDefaultEras():
-    _era.toReplaceWith(siStripTripletStepClusters, _cfg.clusterRemoverForIter("SiStripTripletStep", _eraName, _postfix))
+    _era.toReplaceWith(siStripTripletStep2Clusters, _cfg.clusterRemoverForIter("SiStripTripletStep2", _eraName, _postfix))
 
 #----------------------------------------- SEEDING LAYERS
-import RecoTracker.TkSeedingLayers.SiStripLayerTriplets_cfi
-siStripTripletStepSeedLayers = RecoTracker.TkSeedingLayers.SiStripLayerTriplets_cfi.SiStripLayerTriplets.clone()
+import RecoTracker.TkSeedingLayers.SiStripLayerTriplets2_cfi
+siStripTripletStep2SeedLayers = RecoTracker.TkSeedingLayers.SiStripLayerTriplets2_cfi.SiStripLayerTriplets2.clone()
 
 
 #----------------------------------------- TrackingRegion
 from RecoTracker.TkTrackingRegions.globalTrackingRegion_cfi import globalTrackingRegion as _globalTrackingRegion
 #from RecoTracker.TkTrackingRegions.GlobalTrackingRegion_cfi import GlobalTrackingRegion as _globalTrackingRegion
-siStripTripletStepTrackingRegions = _globalTrackingRegion.clone(
+siStripTripletStep2TrackingRegions = _globalTrackingRegion.clone(
    RegionPSet = dict(
      precise = cms.bool(True),
      useMultipleScattering = cms.bool(False),
@@ -30,31 +30,30 @@ siStripTripletStepTrackingRegions = _globalTrackingRegion.clone(
 #----------------------------------------- Triplet seeding
 
 from RecoPixelVertexing.PixelLowPtUtilities.ClusterShapeHitFilterESProducer_cfi import ClusterShapeHitFilterESProducer as _ClusterShapeHitFilterESProducer
-siStripTripletStepClusterShapeHitFilter = _ClusterShapeHitFilterESProducer.clone(
-    ComponentName = 'siStripTripletStepClusterShapeHitFilter',
+siStripTripletStep2ClusterShapeHitFilter = _ClusterShapeHitFilterESProducer.clone(
+    ComponentName = 'siStripTripletStep2ClusterShapeHitFilter',
     doStripShapeCut = cms.bool(False),
     clusterChargeCut = dict(refToPSet_ = 'SiStripClusterChargeCutTight')
 )
 
 from RecoTracker.TkHitPairs.hitPairEDProducer_cfi import hitPairEDProducer as _hitPairEDProducer
-siStripTripletStepHitDoublets = _hitPairEDProducer.clone(
-    seedingLayers = "siStripTripletStepSeedLayers",
-    trackingRegions = "siStripTripletStepTrackingRegions",
-    maxElement = 500000,
+siStripTripletStep2HitDoublets = _hitPairEDProducer.clone(
+    seedingLayers = "siStripTripletStep2SeedLayers",
+    trackingRegions = "siStripTripletStep2TrackingRegions",
+    maxElement = 0,
     produceIntermediateHitDoublets = True,
 )
 
 from RecoTracker.TkSeedGenerator.multiHitFromChi2EDProducer_cfi import multiHitFromChi2EDProducer as _multiHitFromChi2EDProducer
-siStripTripletStepHitTriplets = _multiHitFromChi2EDProducer.clone(
-    doublets = "siStripTripletStepHitDoublets",
+siStripTripletStep2HitTriplets = _multiHitFromChi2EDProducer.clone(
+    doublets = "siStripTripletStep2HitDoublets",
     extraPhiKDBox = 0.01,
 )
 
-
 from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer_cff import seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer as _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer
 from RecoPixelVertexing.PixelLowPtUtilities.StripSubClusterShapeSeedFilter_cfi import StripSubClusterShapeSeedFilter as _StripSubClusterShapeSeedFilter
-siStripTripletStepSeeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer.clone(
-    seedingHitSets = "siStripTripletStepHitTriplets",
+siStripTripletStep2Seeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer.clone(
+    seedingHitSets = "siStripTripletStep2HitTriplets",
     SeedComparitorPSet = dict(
         ComponentName = 'CombinedSeedComparitor',
         mode = cms.string("and"),
@@ -64,14 +63,13 @@ siStripTripletStepSeeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProd
                 FilterAtHelixStage = cms.bool(True),
                 FilterPixelHits = cms.bool(False),
                 FilterStripHits = cms.bool(True),
-                ClusterShapeHitFilterName = cms.string('siStripTripletStepClusterShapeHitFilter'),
+                ClusterShapeHitFilterName = cms.string('siStripTripletStep2ClusterShapeHitFilter'),
                 ClusterShapeCacheSrc = cms.InputTag("siPixelClusterShapeCache") # not really needed here since FilterPixelHits=False
-            ), 
+            ),
             _StripSubClusterShapeSeedFilter.clone()
         )
     )
 )
-
 #from RecoPixelVertexing.PixelTriplets.pixelTripletLargeTipEDProducer_cfi import pixelTripletLargeTipEDProducer as _pixelTripletLargeTipEDProducer
 #from RecoPixelVertexing.PixelLowPtUtilities.ClusterShapeHitFilterESProducer_cfi import *
 #siStripTripletStepHitTriplets = _pixelTripletHLTEDProducer.clone(
@@ -83,7 +81,7 @@ siStripTripletStepSeeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProd
 #from RecoPixelVertexing.PixelLowPtUtilities.StripSubClusterShapeSeedFilter_cfi import StripSubClusterShapeSeedFilter as _StripSubClusterShapeSeedFilter
 
 
-#_siStripTripletStepSeedComparitorPSet = dict(
+#_siStripTripletStep2SeedComparitorPSet = dict(
 #    ComponentName = 'CombinedSeedComparitor',
 #    mode = cms.string("and"),
 #    comparitors = cms.VPSet(
@@ -92,16 +90,16 @@ siStripTripletStepSeeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProd
 #            FilterAtHelixStage = cms.bool(True),
 #            FilterPixelHits = cms.bool(False),
 #            FilterStripHits = cms.bool(True),
-#            ClusterShapeHitFilterName = cms.string('siStripTripletStepClusterShapeHitFilter'),
+#            ClusterShapeHitFilterName = cms.string('siStripTripletStep2ClusterShapeHitFilter'),
 #            ClusterShapeCacheSrc = cms.InputTag("siPixelClusterShapeCache") # not really needed here since FilterPixelHits=False
 #        ),
 #        _StripSubClusterShapeSeedFilter.clone()
 #    )
 #)
 
-#siStripTripletStepSeeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer.clone(#empirically better than 'SeedFromConsecutiveHitsTripletOnlyCreator'
-#    seedingHitSets = "siStripTripletStepHitTriplets",
-#    SeedComparitorPSet = _siStripTripletStepSeedComparitorPSet,
+#siStripTripletStep2Seeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer.clone(#empirically better than 'SeedFromConsecutiveHitsTripletOnlyCreator'
+#    seedingHitSets = "siStripTripletStep2HitTriplets",
+#    SeedComparitorPSet = _siStripTripletStep2SeedComparitorPSet,
 #)
 
 
@@ -114,24 +112,24 @@ siStripTripletStepSeeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProd
 
 #----------------------------------------- QUALITY CUTS DURING TRACK BUILDING
 import TrackingTools.TrajectoryFiltering.TrajectoryFilter_cff as _TrajectoryFilter_cff
-_siStripTripletStepTrajectoryFilterBase = _TrajectoryFilter_cff.CkfBaseTrajectoryFilter_block.clone(
+_siStripTripletStep2TrajectoryFilterBase = _TrajectoryFilter_cff.CkfBaseTrajectoryFilter_block.clone(
     maxLostHits = 0,
     minimumNumberOfHits = 3,
     minPt = 0.1,
 )
 
-siStripTripletStepTrajectoryFilter = _siStripTripletStepTrajectoryFilterBase.clone(
+siStripTripletStep2TrajectoryFilter = _siStripTripletStep2TrajectoryFilterBase.clone(
     seedPairPenalty = 1,
 )
 
 
-siStripTripletStepTrajectoryFilterInOut = siStripTripletStepTrajectoryFilter.clone(
+siStripTripletStep2TrajectoryFilterInOut = siStripTripletStep2TrajectoryFilter.clone(
     minimumNumberOfHits = 4,
 )
 
 import RecoTracker.MeasurementDet.Chi2ChargeMeasurementEstimator_cfi
-siStripTripletStepChi2Est = RecoTracker.MeasurementDet.Chi2ChargeMeasurementEstimator_cfi.Chi2ChargeMeasurementEstimator.clone(
-    ComponentName = cms.string('siStripTripletStepChi2Est'),
+siStripTripletStep2Chi2Est = RecoTracker.MeasurementDet.Chi2ChargeMeasurementEstimator_cfi.Chi2ChargeMeasurementEstimator.clone(
+    ComponentName = cms.string('siStripTripletStep2Chi2Est'),
     nSigma = cms.double(3.0),
     MaxChi2 = cms.double(20.0),
     clusterChargeCut = cms.PSet(refToPSet_ = cms.string('SiStripClusterChargeCutTight')),
@@ -141,14 +139,14 @@ siStripTripletStepChi2Est = RecoTracker.MeasurementDet.Chi2ChargeMeasurementEsti
 
 #----------------------------------------- TRACK BUILDING
 import RecoTracker.CkfPattern.GroupedCkfTrajectoryBuilder_cfi
-siStripTripletStepTrajectoryBuilder = RecoTracker.CkfPattern.GroupedCkfTrajectoryBuilder_cfi.GroupedCkfTrajectoryBuilder.clone(
+siStripTripletStep2TrajectoryBuilder = RecoTracker.CkfPattern.GroupedCkfTrajectoryBuilder_cfi.GroupedCkfTrajectoryBuilder.clone(
     MeasurementTrackerName = '',
-    trajectoryFilter = cms.PSet(refToPSet_ = cms.string('siStripTripletStepTrajectoryFilter')),
-    inOutTrajectoryFilter = cms.PSet(refToPSet_ = cms.string('siStripTripletStepTrajectoryFilterInOut')),
+    trajectoryFilter = cms.PSet(refToPSet_ = cms.string('siStripTripletStep2TrajectoryFilter')),
+    inOutTrajectoryFilter = cms.PSet(refToPSet_ = cms.string('siStripTripletStep2TrajectoryFilterInOut')),
     useSameTrajFilter = False,
     minNrOfHitsForRebuild = 4,
-    maxCand = 3,
-    estimator = cms.string('siStripTripletStepChi2Est'),
+    maxCand = 2,
+    estimator = cms.string('siStripTripletStep2Chi2Est'),
     maxDPhiForLooperReconstruction = cms.double(2.0),
     # 0.63 GeV is the maximum pT for a charged particle to loop within the 1.1m radius
     # of the outermost Tracker barrel layer (with B=3.8T)
@@ -159,26 +157,26 @@ siStripTripletStepTrajectoryBuilder = RecoTracker.CkfPattern.GroupedCkfTrajector
 
 #----------------------------------------- MAKING OF TRACK CANDIDATES
 import RecoTracker.CkfPattern.CkfTrackCandidates_cfi
-siStripTripletStepTrackCandidates = RecoTracker.CkfPattern.CkfTrackCandidates_cfi.ckfTrackCandidates.clone(
-    src = cms.InputTag('siStripTripletStepSeeds'),
+siStripTripletStep2TrackCandidates = RecoTracker.CkfPattern.CkfTrackCandidates_cfi.ckfTrackCandidates.clone(
+    src = cms.InputTag('siStripTripletStep2Seeds'),
     ### these two parameters are relevant only for the CachingSeedCleanerBySharedInput
     numHitsForSeedCleaner = cms.int32(50),
     onlyPixelHitsForSeedCleaner = cms.bool(True),
 
-    TrajectoryBuilderPSet = cms.PSet(refToPSet_ = cms.string('siStripTripletStepTrajectoryBuilder')),
-    #clustersToSkip = cms.InputTag('siStripTripletStepClusters'),
+    TrajectoryBuilderPSet = cms.PSet(refToPSet_ = cms.string('siStripTripletStep2TrajectoryBuilder')),
+    #clustersToSkip = cms.InputTag('siStripTripletStep2Clusters'),
     doSeedingRegionRebuilding = True,
     useHitsSplitting = True,
     cleanTrajectoryAfterInOut = True
 )
 
 from TrackingTools.TrajectoryCleaning.TrajectoryCleanerBySharedHits_cfi import trajectoryCleanerBySharedHits
-siStripTripletStepTrajectoryCleanerBySharedHits = trajectoryCleanerBySharedHits.clone(
-    ComponentName = cms.string('siStripTripletStepTrajectoryCleanerBySharedHits'),
+siStripTripletStep2TrajectoryCleanerBySharedHits = trajectoryCleanerBySharedHits.clone(
+    ComponentName = cms.string('siStripTripletStep2TrajectoryCleanerBySharedHits'),
     fractionShared = cms.double(0.19),
     allowSharedFirstHit = cms.bool(True)
     )
-siStripTripletStepTrackCandidates.TrajectoryCleaner = 'siStripTripletStepTrajectoryCleanerBySharedHits'
+siStripTripletStep2TrackCandidates.TrajectoryCleaner = 'siStripTripletStep2TrajectoryCleanerBySharedHits'
 
 
 
@@ -186,50 +184,50 @@ siStripTripletStepTrackCandidates.TrajectoryCleaner = 'siStripTripletStepTraject
 
 # ----------------------------------------- TRACK FITTING AND SMOOTHING OPTIONS
 import TrackingTools.TrackFitters.RungeKuttaFitters_cff
-siStripTripletStepFitterSmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.KFFittingSmootherWithOutliersRejectionAndRK.clone(
-    ComponentName = 'siStripTripletStepFitterSmoother',
+siStripTripletStep2FitterSmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.KFFittingSmootherWithOutliersRejectionAndRK.clone(
+    ComponentName = 'siStripTripletStep2FitterSmoother',
     EstimateCut = 30,
     MinNumberOfHits = 4,
-    Fitter = cms.string('siStripTripletStepRKFitter'),
-    Smoother = cms.string('siStripTripletStepRKSmoother')
+    Fitter = cms.string('siStripTripletStep2RKFitter'),
+    Smoother = cms.string('siStripTripletStep2RKSmoother')
     )
 
 
-siStripTripletStepFitterSmootherForLoopers = siStripTripletStepFitterSmoother.clone(
-    ComponentName = 'siStripTripletStepFitterSmootherForLoopers',
-    Fitter = cms.string('siStripTripletStepRKFitterForLoopers'),
-    Smoother = cms.string('siStripTripletStepRKSmootherForLoopers')
+siStripTripletStep2FitterSmootherForLoopers = siStripTripletStep2FitterSmoother.clone(
+    ComponentName = 'siStripTripletStep2FitterSmootherForLoopers',
+    Fitter = cms.string('siStripTripletStep2RKFitterForLoopers'),
+    Smoother = cms.string('siStripTripletStep2RKSmootherForLoopers')
 )
 
 # Also necessary to specify minimum number of hits after final track fit
-siStripTripletStepRKTrajectoryFitter = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectoryFitter.clone(
-    ComponentName = cms.string('siStripTripletStepRKFitter'),
+siStripTripletStep2RKTrajectoryFitter = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectoryFitter.clone(
+    ComponentName = cms.string('siStripTripletStep2RKFitter'),
     minHits = 4
 )
 
 
-siStripTripletStepRKTrajectoryFitterForLoopers = siStripTripletStepRKTrajectoryFitter.clone(
-    ComponentName = cms.string('siStripTripletStepRKFitterForLoopers'),
+siStripTripletStep2RKTrajectoryFitterForLoopers = siStripTripletStep2RKTrajectoryFitter.clone(
+    ComponentName = cms.string('siStripTripletStep2RKFitterForLoopers'),
     Propagator = cms.string('PropagatorWithMaterialForLoopers'),
 )
 
-siStripTripletStepRKTrajectorySmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectorySmoother.clone(
-    ComponentName = cms.string('siStripTripletStepRKSmoother'),
+siStripTripletStep2RKTrajectorySmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectorySmoother.clone(
+    ComponentName = cms.string('siStripTripletStep2RKSmoother'),
     errorRescaling = 10.0,
     minHits = 4
 )
 
 
-siStripTripletStepRKTrajectorySmootherForLoopers = siStripTripletStepRKTrajectorySmoother.clone(
-    ComponentName = cms.string('siStripTripletStepRKSmootherForLoopers'),
+siStripTripletStep2RKTrajectorySmootherForLoopers = siStripTripletStep2RKTrajectorySmoother.clone(
+    ComponentName = cms.string('siStripTripletStep2RKSmootherForLoopers'),
     Propagator = cms.string('PropagatorWithMaterialForLoopers'),
 )
 
 import TrackingTools.TrackFitters.FlexibleKFFittingSmoother_cfi
 siStripTripletFlexibleKFFittingSmoother = TrackingTools.TrackFitters.FlexibleKFFittingSmoother_cfi.FlexibleKFFittingSmoother.clone(
     ComponentName = cms.string('siStripTripletFlexibleKFFittingSmoother'),
-    standardFitter = cms.string('siStripTripletStepFitterSmoother'),
-    looperFitter = cms.string('siStripTripletStepFitterSmootherForLoopers'),
+    standardFitter = cms.string('siStripTripletStep2FitterSmoother'),
+    looperFitter = cms.string('siStripTripletStep2FitterSmootherForLoopers'),
 )
 
 
@@ -250,10 +248,10 @@ siStripTripletFlexibleKFFittingSmoother = TrackingTools.TrackFitters.FlexibleKFF
 #siStripTripletStepTrackCandidates.TrajectoryCleaner = 'siStripTripletStepTrajectoryCleanerBySharedHits'
 
 import RecoTracker.TrackProducer.TrackProducer_cfi
-siStripTripletStepTracks = RecoTracker.TrackProducer.TrackProducer_cfi.TrackProducer.clone(
-    src = 'siStripTripletStepTrackCandidates',
-    AlgorithmName = cms.string('siStripTripletStep'),
-    #Fitter = 'siStripTripletStepFitterSmoother',
+siStripTripletStep2Tracks = RecoTracker.TrackProducer.TrackProducer_cfi.TrackProducer.clone(
+    src = 'siStripTripletStep2TrackCandidates',
+    AlgorithmName = cms.string('siStripTripletStep2'),
+    #Fitter = 'siStripTripletStep2FitterSmoother',
     Fitter = 'siStripTripletFlexibleKFFittingSmoother',
     )
 
@@ -262,26 +260,26 @@ siStripTripletStepTracks = RecoTracker.TrackProducer.TrackProducer_cfi.TrackProd
 #----------------------------------------- TRACK SELECTION AND QUALITY FLAG SETTING.
 from RecoTracker.FinalTrackSelectors.TrackMVAClassifierPrompt_cfi import *
 from RecoTracker.FinalTrackSelectors.TrackMVAClassifierDetached_cfi import *
-siStripTripletStepClassifier1 = TrackMVAClassifierDetached.clone()
-siStripTripletStepClassifier1.src = 'siStripTripletStepTracks'
-siStripTripletStepClassifier1.GBRForestLabel = 'MVASelectorIter6_13TeV'
-siStripTripletStepClassifier1.qualityCuts = [-0.6,-0.45,-0.3]
-siStripTripletStepClassifier2 = TrackMVAClassifierPrompt.clone()
-siStripTripletStepClassifier2.src = 'siStripTripletStepTracks'
-siStripTripletStepClassifier2.GBRForestLabel = 'MVASelectorIter0_13TeV'
-siStripTripletStepClassifier2.qualityCuts = [0.0,0.0,0.0]
+siStripTripletStep2Classifier1 = TrackMVAClassifierDetached.clone()
+siStripTripletStep2Classifier1.src = 'siStripTripletStep2Tracks'
+siStripTripletStep2Classifier1.GBRForestLabel = 'MVASelectorIter6_13TeV'
+siStripTripletStep2Classifier1.qualityCuts = [-0.6,-0.45,-0.3]
+siStripTripletStep2Classifier2 = TrackMVAClassifierPrompt.clone()
+siStripTripletStep2Classifier2.src = 'siStripTripletStep2Tracks'
+siStripTripletStep2Classifier2.GBRForestLabel = 'MVASelectorIter0_13TeV'
+siStripTripletStep2Classifier2.qualityCuts = [0.0,0.0,0.0]
 
 from RecoTracker.FinalTrackSelectors.ClassifierMerger_cfi import *
-siStripTripletStep = ClassifierMerger.clone()
-siStripTripletStep.inputClassifiers=['siStripTripletStepClassifier1','siStripTripletStepClassifier2']
+siStripTripletStep2 = ClassifierMerger.clone()
+siStripTripletStep2.inputClassifiers=['siStripTripletStep2Classifier1','siStripTripletStep2Classifier2']
 
 from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
 from Configuration.Eras.Modifier_trackingPhase1QuadProp_cff import trackingPhase1QuadProp
-trackingPhase1.toReplaceWith(siStripTripletStep, siStripTripletStepClassifier1.clone(
+trackingPhase1.toReplaceWith(siStripTripletStep2, siStripTripletStep2Classifier1.clone(
      GBRForestLabel = 'MVASelectorTobTecStep_Phase1',
      qualityCuts = [-0.6,-0.45,-0.3],
 ))
-trackingPhase1QuadProp.toReplaceWith(siStripTripletStep, siStripTripletStepClassifier1.clone(
+trackingPhase1QuadProp.toReplaceWith(siStripTripletStep2, siStripTripletStep2Classifier1.clone(
      GBRForestLabel = 'MVASelectorTobTecStep_Phase1',
      qualityCuts = [-0.6,-0.45,-0.3],
 ))
@@ -290,26 +288,18 @@ trackingPhase1QuadProp.toReplaceWith(siStripTripletStep, siStripTripletStepClass
 
 
 
-SiStripTripletStep = cms.Sequence(siStripTripletStepClusters*
-                          siStripTripletStepSeedLayers*
-                          siStripTripletStepTrackingRegions*
-                          siStripTripletStepHitDoublets*
-                          siStripTripletStepHitTriplets*
-                          siStripTripletStepSeeds*
-                          #siStripTripletStepSeedLayersPair*
-                          #siStripTripletStepTrackingRegionsPair*
-                          #siStripTripletStepHitDoubletsPair*
-                          #siStripTripletStepSeedsPair*
-                          siStripTripletStepSeeds*
-                          siStripTripletStepTrackCandidates*
-                          siStripTripletStepTracks*
-                          siStripTripletStepClassifier1*siStripTripletStepClassifier2*
-                          siStripTripletStep)
-
-
-
-
-
-
-
-
+SiStripTripletStep2 = cms.Sequence(siStripTripletStep2Clusters*
+                          siStripTripletStep2SeedLayers*
+                          siStripTripletStep2TrackingRegions*
+                          siStripTripletStep2HitDoublets*
+                          siStripTripletStep2HitTriplets*
+                          siStripTripletStep2Seeds*
+                          #siStripTripletStep2SeedLayersPair*
+                          #siStripTripletStep2TrackingRegionsPair*
+                          #siStripTripletStep2HitDoubletsPair*
+                          #siStripTripletStep2SeedsPair*
+                          siStripTripletStep2Seeds*
+                          siStripTripletStep2TrackCandidates*
+                          siStripTripletStep2Tracks*
+                          siStripTripletStep2Classifier1*siStripTripletStep2Classifier2*
+                          siStripTripletStep2)
