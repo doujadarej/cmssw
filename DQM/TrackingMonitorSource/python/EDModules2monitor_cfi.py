@@ -22,17 +22,17 @@ categories    ['Clusterizer'] = cms.vstring(  )
 # initialStepSeeds,lowPtTripletStepSeeds, pixelPairStepSeeds, detachedTripletStepSeeds, : TooManyClusters (SeedGeneratorFromRegionHitsEDProducer),
 # photonConvTrajSeedFromSingleLeg : (PhotonConversionTrajectorySeedProducerFromSingleLeg)
 pluginsMonName['Seeding'] = cms.string ( 'Seeding' ) 
-modulesLabel  ['Seeding'] = cms.vstring( 'initialStepSeeds', 'lowPtTripletStepSeeds', 'pixelPairStepSeeds', 'detachedTripletStepSeeds', 'mixedTripletStepSeedsA', 'mixedTripletStepSeedsB', 'mixedTripletStepSeeds', 'pixelLessStepSeeds', 'tobTecStepSeeds', 'photonConvTrajSeedFromSingleLeg')
+modulesLabel  ['Seeding'] = cms.vstring( 'initialStepSeeds', 'lowPtTripletStepSeeds', 'pixelPairStepSeeds', 'detachedTripletStepSeeds', 'mixedTripletStepSeedsA', 'mixedTripletStepSeedsB', 'mixedTripletStepSeeds', 'pixelLessStepSeeds', 'tobTecStepSeeds', 'siStripTripletStep1Seeds', 'siStripTripletStep2Seeds', 'photonConvTrajSeedFromSingleLeg')
 categories    ['Seeding'] = cms.vstring( 'TooManyClusters', 'TooManyPairs', 'TooManyTriplets', 'TooManySeeds' )
 
 # RecoTracker/CkfPattern/src/CkfTrackCandidateMakerBase.cc
 pluginsMonName['TrackCandidate'] = cms.string ( 'TrackCandidate' ) 
-modulesLabel  ['TrackCandidate'] = cms.vstring( 'initialStepTrackCandidates', 'lowPtTripletStepTrackCandidates', 'pixelPairStepTrackCandidates', 'detachedTripletStepTrackCandidates', 'mixedTripletStepTrackCandidates', 'pixelLessStepTrackCandidates', 'tobTecStepTrackCandidates', 'convTrackCandidates' )
+modulesLabel  ['TrackCandidate'] = cms.vstring( 'initialStepTrackCandidates', 'lowPtTripletStepTrackCandidates', 'pixelPairStepTrackCandidates', 'detachedTripletStepTrackCandidates', 'mixedTripletStepTrackCandidates', 'pixelLessStepTrackCandidates', 'tobTecStepTrackCandidates', 'siStripTripletStep1TrackCandidates','siStripTripletStep2TrackCandidates', 'convTrackCandidates' )
 categories    ['TrackCandidate'] = cms.vstring( 'TooManySeeds', 'CkfPattern', 'BaseCkfTrajectoryBuilder_InfiniteLoop' )
 
 # TrackProducer:FailedPropagation 
 pluginsMonName['TrackFinder'] = cms.string ( 'TrackFinder' ) 
-modulesLabel  ['TrackFinder'] = cms.vstring( 'pixelTracks', 'initialStepTracks', 'lowPtTripletStepTracks', 'pixelPairStepTracks', 'detachedTripletStepTracks', 'mixedTripletStepTracks', 'pixelLessStepTracks', 'tobTecStepTracks', 'generalTracks' )
+modulesLabel  ['TrackFinder'] = cms.vstring( 'pixelTracks', 'initialStepTracks', 'lowPtTripletStepTracks', 'pixelPairStepTracks', 'detachedTripletStepTracks', 'mixedTripletStepTracks', 'pixelLessStepTracks', 'tobTecStepTracks', 'siStripTripletStep1Tracks', 'siStripTripletStep2Tracks', 'generalTracks' )
 categories    ['TrackFinder'] = cms.vstring( 'FailedPropagation' )
 
 
@@ -60,6 +60,12 @@ modulesLabel  ['FullIterTracking'] = cms.vstring(
        'tobTecStepSeeds_iter6',
        'tobTecStepTrackCandidates_iter6',
        'tobTecStepTracks_iter6',
+       'siStripTripletStep1Seeds_iter7',
+       'siStripTripletStep1TrackCandidates_iter7',
+       'siStripTripletStep1Tracks_iter7',
+       'siStripTripletStep2Seeds_iter8',
+       'siStripTripletStep2TrackCandidates_iter8',
+       'siStripTripletStep2Tracks_iter8',
        'photonConvTrajSeedFromSingleLeg',
        'convTrackCandidates',
        'convStepTracks',
@@ -96,6 +102,12 @@ modulesLabel  ['IterTracking'] = cms.vstring(
        'tobTecStepSeeds_iter6',
        'tobTecStepTrackCandidates_iter6',
        'tobTecStepTracks_iter6',
+       'siStripTripletStep1Seeds_iter7',
+       'siStripTripletStep1TrackCandidates_iter7',
+       'siStripTripletStep1Tracks_iter7',
+       'siStripTripletStep2Seeds_iter8',
+       'siStripTripletStep2TrackCandidates_iter8',
+       'siStripTripletStep2Tracks_iter8'
 )
 categories['IterTracking']     = cms.vstring(
     'TooManyClusters',
