@@ -3509,6 +3509,8 @@ void TrackingNtuple::fillDescriptions(edm::ConfigurationDescriptions& descriptio
       edm::InputTag("seedTracksmixedTripletStepSeeds"),
       edm::InputTag("seedTrackspixelLessStepSeeds"),
       edm::InputTag("seedTrackstobTecStepSeeds"),
+      edm::InputTag("seedTrackssiStripTripletStep1Seeds"),
+      edm::InputTag("seedTrackssiStripTripletStep2Seeds"),
       edm::InputTag("seedTracksjetCoreRegionalStepSeeds"),
       edm::InputTag("seedTracksmuonSeededSeedsInOut"),
       edm::InputTag("seedTracksmuonSeededSeedsOutIn")
@@ -3521,6 +3523,8 @@ void TrackingNtuple::fillDescriptions(edm::ConfigurationDescriptions& descriptio
       edm::InputTag("mixedTripletStepTrackCandidates"),
       edm::InputTag("pixelLessStepTrackCandidates"),
       edm::InputTag("tobTecStepTrackCandidates"),
+      edm::InputTag("siStripTripletStep1TrackCandidates"),
+      edm::InputTag("siStripTripletStep2TrackCandidates"),
       edm::InputTag("jetCoreRegionalStepTrackCandidates"),
       edm::InputTag("muonSeededTrackCandidatesInOut"),
       edm::InputTag("muonSeededTrackCandidatesOutIn")

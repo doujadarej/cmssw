@@ -66,7 +66,9 @@ Algo = _Enum(
     hiRegitMuTobTecStep = 43,
     hiRegitMuMuonSeededStepInOut = 44,
     hiRegitMuMuonSeededStepOutIn = 45,
-    algoSize = 46
+    siStripTripletStep1 = 46, 
+    siStripTripletStep2 = 47,
+    algoSize = 48
 )
 
 # Needs to kept consistent with

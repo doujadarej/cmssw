@@ -24,6 +24,8 @@ _iterations = [
     "MixedTripletStep",
     "PixelLessStep",
     "TobTecStep",
+    "SiStripTripletStep1",
+    "SiStripTripletStep2",
     "JetCoreRegionalStep",
 ]
 _iterations_trackingLowPU = [
@@ -46,6 +48,8 @@ _iterations_trackingPhase1 = [
     "MixedTripletStep",
     "PixelLessStep",
     "TobTecStep",
+    "SiStripTripletStep1",
+    "SiStripTripletStep2",
     "JetCoreRegionalStep",
 ]
 _iterations_trackingPhase2PU140 = [
@@ -135,11 +139,17 @@ def allEras():
 def nonDefaultEras():
     return _nonDefaultEras
 
+
+
+
+
+###########Commented this because error : KeyError: 'SiStripTripletStep1Task' 
 def createEarlyTask(eraName, postfix, modDict):
     task = cms.Task()
     for it in globals()["_iterations"+postfix]:
         task.add(modDict[it+'Task'])
     return task
+
 
 def iterationAlgos(postfix, includeSequenceName=False):
     muonVariable = "_iterations_muonSeeded"+postfix

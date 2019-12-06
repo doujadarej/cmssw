@@ -52,7 +52,9 @@ std::string const TrackBase::algoNames[] = {
     "hiRegitMuPixelLessStep",
     "hiRegitMuTobTecStep",
     "hiRegitMuMuonSeededStepInOut",
-    "hiRegitMuMuonSeededStepOutIn"
+    "hiRegitMuMuonSeededStepOutIn",
+    "siStripTripletStep1",
+    "siStripTripletStep2"
 };
 
 std::string const TrackBase::qualityNames[] = {

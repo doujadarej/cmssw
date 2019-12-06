@@ -9,6 +9,8 @@ from RecoTracker.IterativeTracking.PixelPairStep_cff import *
 from RecoTracker.IterativeTracking.MixedTripletStep_cff import *
 from RecoTracker.IterativeTracking.PixelLessStep_cff import *
 from RecoTracker.IterativeTracking.TobTecStep_cff import *
+from RecoTracker.IterativeTracking.SiStripTripletStep1_cff import *
+from RecoTracker.IterativeTracking.SiStripTripletStep2_cff import *
 from RecoTracker.IterativeTracking.JetCoreRegionalStep_cff import *
 
 # Phase1 specific iterations

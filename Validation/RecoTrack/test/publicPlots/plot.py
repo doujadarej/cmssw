@@ -39,6 +39,8 @@ iter_colors = dict(
     MixedTripletStep    = makeColor("f4ba8a"),
     PixelLessStep       = makeColor("dee8c9"),
     TobTecStep          = makeColor("cddcab"),
+    SiStripTripletStep1 = makeColor("cde7ff"), #used the same as initial FIX ME
+    SiStripTripletStep2 = makeColor("b2d3f3"), #used the same as HighPtTriplet FIX ME
     JetCoreRegionalStep = makeColor("c1b3d1"),
     MuonSeededStepInOut = makeColor("e2a8a5"),
     MuonSeededStepOutIn = makeColor("a74a44"),
@@ -746,6 +748,8 @@ def plotColoredEff(phase1file, prefix, pileup):
         "PixelPairStep",
         "PixelLessStep",
         "TobTecStep",
+        "SiStripTripletStep1", 
+        "SiStripTripletStep2",
         "JetCoreRegionalStep",
         "MuonSeededStepInOut",
         "MuonSeededStepOutIn",
@@ -864,6 +868,8 @@ def plotFake(files, prefix, pileup):
         "MixedTripletStep",
         "PixelLessStep",
         "TobTecStep",
+        "SiStripTripletStep1",
+        "SiStripTripletStep2", 
         "JetCoreRegionalStep",
         "MuonSeededStepInOut",
         "MuonSeededStepOutIn",
