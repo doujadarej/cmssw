@@ -19,8 +19,8 @@ siStripTripletStep1TrackingRegions = _globalTrackingRegion.clone(
    RegionPSet = dict(
      precise = cms.bool(True),
      useMultipleScattering = cms.bool(True),
-     originHalfLength = cms.double(280),
-     originRadius = cms.double(110),
+     originHalfLength = cms.double(60),
+     originRadius = cms.double(20),
      ptMin = cms.double(1)
    )
 )
@@ -41,7 +41,7 @@ from RecoTracker.TkHitPairs.hitPairEDProducer_cfi import hitPairEDProducer as _h
 siStripTripletStep1HitDoublets = _hitPairEDProducer.clone(
     seedingLayers = "siStripTripletStep1SeedLayers",
     trackingRegions = "siStripTripletStep1TrackingRegions",
-    maxElement = 50000000,
+    maxElement = 500000000,
     produceIntermediateHitDoublets = True,
 )
 
