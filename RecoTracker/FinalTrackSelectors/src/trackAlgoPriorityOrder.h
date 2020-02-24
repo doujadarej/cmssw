@@ -41,7 +41,6 @@ namespace impl {
     reco::TrackBase::pixelLessStep,
     reco::TrackBase::tobTecStep,
     reco::TrackBase::siStripTripletStep1,
-    reco::TrackBase::siStripTripletStep2,
     reco::TrackBase::jetCoreRegionalStep,
     reco::TrackBase::conversionStep,
     reco::TrackBase::muonSeededStepInOut,

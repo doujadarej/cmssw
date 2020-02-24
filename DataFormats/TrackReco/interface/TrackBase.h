@@ -140,8 +140,7 @@ public:
    hiRegitMuMuonSeededStepInOut = 44,
    hiRegitMuMuonSeededStepOutIn = 45,
    siStripTripletStep1 = 46,
-   siStripTripletStep2 = 47,
-   algoSize = 48
+   algoSize = 47
     };
 
     /// algo mask

@@ -12,8 +12,7 @@ earlyGeneralTracks.trackProducers = ['initialStepTracks',
                                      'mixedTripletStepTracks',
                                      'pixelLessStepTracks',
                                      'tobTecStepTracks', 
-                                     'siStripTripletStep1Tracks',
-                                     'siStripTripletStep2Tracks'
+                                     'siStripTripletStep1Tracks'
                                      ]
 earlyGeneralTracks.inputClassifiers =["initialStep",
                                       "jetCoreRegionalStep",
@@ -23,8 +22,7 @@ earlyGeneralTracks.inputClassifiers =["initialStep",
                                       "mixedTripletStep",
                                       "pixelLessStep",
                                       "tobTecStep",
-                                      "siStripTripletStep1",
-                                      "siStripTripletStep2"
+                                      "siStripTripletStep1"
                                       ]
 from Configuration.Eras.Modifier_trackingLowPU_cff import trackingLowPU
 trackingLowPU.toModify(earlyGeneralTracks,
@@ -36,8 +34,7 @@ trackingLowPU.toModify(earlyGeneralTracks,
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
         'tobTecStepTracks',
-        'siStripTripletStep1',
-        'siStripTripletStep2'
+        'siStripTripletStep1'
     ],
     inputClassifiers = [
         "initialStepSelector",
@@ -47,8 +44,7 @@ trackingLowPU.toModify(earlyGeneralTracks,
         "mixedTripletStep",
         "pixelLessStepSelector",
         "tobTecStep",
-        "siStripTripletStep1",
-        "siStripTripletStep2"
+        "siStripTripletStep1"
     ]
 )
 from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
@@ -65,8 +61,7 @@ _forPhase1 = dict(
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
         'tobTecStepTracks',
-        'siStripTripletStep1Tracks',
-        'siStripTripletStep2Tracks'
+        'siStripTripletStep1Tracks'
     ],
     inputClassifiers = [
         "initialStep",
@@ -80,8 +75,7 @@ _forPhase1 = dict(
         "mixedTripletStep",
         "pixelLessStep",
         "tobTecStep",
-        "siStripTripletStep1",
-        "siStripTripletStep2"
+        "siStripTripletStep1"
     ],
 )
 trackingPhase1.toModify(earlyGeneralTracks, **_forPhase1)
