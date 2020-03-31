@@ -19,8 +19,8 @@ siStripTripletStep1TrackingRegions = _globalTrackingRegion.clone(
    RegionPSet = dict(
      precise = cms.bool(True),
      useMultipleScattering = cms.bool(True),
-     originHalfLength = cms.double(60),
-     originRadius = cms.double(20),
+     originHalfLength = cms.double(55),
+     originRadius = cms.double(10),
      ptMin = cms.double(1)
    )
 )
@@ -46,16 +46,24 @@ siStripTripletStep1HitDoublets = _hitPairEDProducer.clone(
 )
 
 from RecoTracker.TkSeedGenerator.multiHitFromChi2EDProducer_cfi import multiHitFromChi2EDProducer as _multiHitFromChi2EDProducer
-siStripTripletStep1HitTriplets = _multiHitFromChi2EDProducer.clone(
+siStripTripletStep1HitQuadruplets = _multiHitFromChi2EDProducer.clone(
     doublets = "siStripTripletStep1HitDoublets",
     extraPhiKDBox = 0.01,
 )
 
 
-from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer_cff import seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer as _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer
+#####ADDED 
+
+#from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsEDProducer_cff import seedCreatorFromRegionConsecutiveHitsEDProducer as _seedCreatorFromRegionConsecutiveHitsEDProducer
+#siStripTripletStep1HitQuadruplets = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
+#    seedingHitSets = "siStripTripletStep1HitQuadruplets",
+#)
+
+from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsEDProducer_cff import seedCreatorFromRegionConsecutiveHitsEDProducer as _seedCreatorFromRegionConsecutiveHitsEDProducer
+#from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer_cff import seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer as _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer
 from RecoPixelVertexing.PixelLowPtUtilities.StripSubClusterShapeSeedFilter_cfi import StripSubClusterShapeSeedFilter as _StripSubClusterShapeSeedFilter
-siStripTripletStep1Seeds = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProducer.clone(
-    seedingHitSets = "siStripTripletStep1HitTriplets",
+siStripTripletStep1Seeds = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
+    seedingHitSets = "siStripTripletStep1HitQuadruplets",
     SeedComparitorPSet = dict(
         ComponentName = 'CombinedSeedComparitor',
         mode = cms.string("and"),
@@ -148,6 +156,8 @@ siStripTripletStep1TrajectoryBuilder = RecoTracker.CkfPattern.GroupedCkfTrajecto
     inOutTrajectoryFilter = cms.PSet(refToPSet_ = cms.string('siStripTripletStep1TrajectoryFilterInOut')),
     useSameTrajFilter = False,
     minNrOfHitsForRebuild = 4,
+    #requireSeedHitsInRebuild = cms.bool(False),
+    alwaysUseInvalidHits = False,
     maxCand = 2,
     estimator = cms.string('siStripTripletStep1Chi2Est'),
     maxDPhiForLooperReconstruction = cms.double(2.0),
@@ -176,7 +186,7 @@ siStripTripletStep1TrackCandidates = RecoTracker.CkfPattern.CkfTrackCandidates_c
 from TrackingTools.TrajectoryCleaning.TrajectoryCleanerBySharedHits_cfi import trajectoryCleanerBySharedHits
 siStripTripletStep1TrajectoryCleanerBySharedHits = trajectoryCleanerBySharedHits.clone(
     ComponentName = cms.string('siStripTripletStep1TrajectoryCleanerBySharedHits'),
-    fractionShared = cms.double(0.25),
+    fractionShared = cms.double(0.4),
     allowSharedFirstHit = cms.bool(True)
     )
 siStripTripletStep1TrackCandidates.TrajectoryCleaner = 'siStripTripletStep1TrajectoryCleanerBySharedHits'
@@ -190,7 +200,7 @@ import TrackingTools.TrackFitters.RungeKuttaFitters_cff
 siStripTripletStep1FitterSmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.KFFittingSmootherWithOutliersRejectionAndRK.clone(
     ComponentName = 'siStripTripletStep1FitterSmoother',
     EstimateCut = 30,
-    MinNumberOfHits = 4,
+    MinNumberOfHits = 8,
     Fitter = cms.string('siStripTripletStep1RKFitter'),
     Smoother = cms.string('siStripTripletStep1RKSmoother')
     )
@@ -205,7 +215,7 @@ siStripTripletStep1FitterSmootherForLoopers = siStripTripletStep1FitterSmoother.
 # Also necessary to specify minimum number of hits after final track fit
 siStripTripletStep1RKTrajectoryFitter = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectoryFitter.clone(
     ComponentName = cms.string('siStripTripletStep1RKFitter'),
-    minHits = 4
+    minHits = 8
 )
 
 
@@ -217,7 +227,7 @@ siStripTripletStep1RKTrajectoryFitterForLoopers = siStripTripletStep1RKTrajector
 siStripTripletStep1RKTrajectorySmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectorySmoother.clone(
     ComponentName = cms.string('siStripTripletStep1RKSmoother'),
     errorRescaling = 10.0,
-    minHits = 4
+    minHits = 8
 )
 
 
@@ -291,7 +301,7 @@ SiStripTripletStep1Task = cms.Task(siStripTripletStep1Clusters,
                           siStripTripletStep1SeedLayers,
                           siStripTripletStep1TrackingRegions,
                           siStripTripletStep1HitDoublets,
-                          siStripTripletStep1HitTriplets,
+                          siStripTripletStep1HitQuadruplets,
                           siStripTripletStep1Seeds,
                           #siStripTripletStep1SeedLayersPair,
                           #siStripTripletStep1TrackingRegionsPair,
