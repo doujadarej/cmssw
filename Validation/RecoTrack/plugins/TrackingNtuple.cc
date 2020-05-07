@@ -1052,6 +1052,9 @@ private:
   std::vector<float> sim_pz       ;
   std::vector<float> sim_pt       ;
   std::vector<float> sim_eta      ;
+  std::vector<float> sim_vx       ; 
+  std::vector<float> sim_vy       ; 
+  std::vector<float> sim_vz       ; 
   std::vector<float> sim_phi      ;
   std::vector<float> sim_pca_pt   ;
   std::vector<float> sim_pca_eta  ;
@@ -1454,6 +1457,9 @@ TrackingNtuple::TrackingNtuple(const edm::ParameterSet& iConfig):
     t->Branch("sim_pz"       , &sim_pz       );
     t->Branch("sim_pt"       , &sim_pt       );
     t->Branch("sim_eta"      , &sim_eta      );
+    t->Branch("sim_vx"       , &sim_vx       ); 
+    t->Branch("sim_vy"       , &sim_vy       );
+    t->Branch("sim_vz"       , &sim_vz       ); 
     t->Branch("sim_phi"      , &sim_phi      );
     t->Branch("sim_pca_pt"   , &sim_pca_pt  );
     t->Branch("sim_pca_eta"  , &sim_pca_eta  );
@@ -1791,6 +1797,9 @@ void TrackingNtuple::clearVariables() {
   sim_pz       .clear();
   sim_pt       .clear();
   sim_eta      .clear();
+  sim_vx       .clear(); 
+  sim_vy       .clear(); 
+  sim_vz       .clear(); 
   sim_phi      .clear();
   sim_pca_pt   .clear();
   sim_pca_eta  .clear();
@@ -3326,6 +3335,9 @@ void TrackingNtuple::fillTrackingParticles(const edm::Event& iEvent, const edm::
     sim_pz       .push_back(tp->pz());
     sim_pt       .push_back(tp->pt());
     sim_eta      .push_back(tp->eta());
+    sim_vx       .push_back(tp->vx()); 
+    sim_vy       .push_back(tp->vy()); 
+    sim_vz       .push_back(tp->vz()); 
     sim_phi      .push_back(tp->phi());
     sim_q        .push_back(tp->charge());
     sim_trkIdx   .push_back(tkIdx);

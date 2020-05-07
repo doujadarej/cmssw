@@ -19,8 +19,8 @@ siStripTripletStep1TrackingRegions = _globalTrackingRegion.clone(
    RegionPSet = dict(
      precise = cms.bool(True),
      useMultipleScattering = cms.bool(True),
-     originHalfLength = cms.double(60),
-     originRadius = cms.double(20),
+     originHalfLength = cms.double(55),
+     originRadius = cms.double(10),
      ptMin = cms.double(1)
    )
 )
@@ -134,7 +134,7 @@ import RecoTracker.MeasurementDet.Chi2ChargeMeasurementEstimator_cfi
 siStripTripletStep1Chi2Est = RecoTracker.MeasurementDet.Chi2ChargeMeasurementEstimator_cfi.Chi2ChargeMeasurementEstimator.clone(
     ComponentName = cms.string('siStripTripletStep1Chi2Est'),
     nSigma = cms.double(3.0),
-    MaxChi2 = cms.double(20.0),
+    MaxChi2 = cms.double(10.0),
     clusterChargeCut = cms.PSet(refToPSet_ = cms.string('SiStripClusterChargeCutTight')),
 )
 
@@ -190,7 +190,7 @@ import TrackingTools.TrackFitters.RungeKuttaFitters_cff
 siStripTripletStep1FitterSmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.KFFittingSmootherWithOutliersRejectionAndRK.clone(
     ComponentName = 'siStripTripletStep1FitterSmoother',
     EstimateCut = 30,
-    MinNumberOfHits = 4,
+    MinNumberOfHits = 8,
     Fitter = cms.string('siStripTripletStep1RKFitter'),
     Smoother = cms.string('siStripTripletStep1RKSmoother')
     )
@@ -205,7 +205,7 @@ siStripTripletStep1FitterSmootherForLoopers = siStripTripletStep1FitterSmoother.
 # Also necessary to specify minimum number of hits after final track fit
 siStripTripletStep1RKTrajectoryFitter = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectoryFitter.clone(
     ComponentName = cms.string('siStripTripletStep1RKFitter'),
-    minHits = 4
+    minHits = 8
 )
 
 
@@ -217,7 +217,7 @@ siStripTripletStep1RKTrajectoryFitterForLoopers = siStripTripletStep1RKTrajector
 siStripTripletStep1RKTrajectorySmoother = TrackingTools.TrackFitters.RungeKuttaFitters_cff.RKTrajectorySmoother.clone(
     ComponentName = cms.string('siStripTripletStep1RKSmoother'),
     errorRescaling = 10.0,
-    minHits = 4
+    minHits = 8
 )
 
 
