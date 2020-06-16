@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 TrackingParticleSelectionForEfficiency = cms.PSet(
-    lipTP = cms.double(30.0),
+    lipTP = cms.double(1e5),
+    #lipTP = cms.double(1e5),
     chargedOnlyTP = cms.bool(True),
     stableOnlyTP = cms.bool(False),
     pdgIdTP = cms.vint32(),
@@ -12,8 +13,12 @@ TrackingParticleSelectionForEfficiency = cms.PSet(
     ptMinTP = cms.double(0.005),
     ptMaxTP = cms.double(1e100),
     maxRapidityTP = cms.double(2.5),
-    tipTP = cms.double(60)
+    tipTP = cms.double(1e5),
+    #tipTP = cms.double(1e5)
 )
+
+
+
 
 def _modifyForPhase1(pset):
     pset.minRapidityTP = -3
