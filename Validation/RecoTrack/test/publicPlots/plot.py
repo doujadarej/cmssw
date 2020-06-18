@@ -39,6 +39,7 @@ iter_colors = dict(
     MixedTripletStep    = makeColor("f4ba8a"),
     PixelLessStep       = makeColor("dee8c9"),
     TobTecStep          = makeColor("cddcab"),
+    #SiStripTripletStep1 = makeColor("738771"), #comment for now
     JetCoreRegionalStep = makeColor("c1b3d1"),
     MuonSeededStepInOut = makeColor("e2a8a5"),
     MuonSeededStepOutIn = makeColor("a74a44"),
@@ -58,7 +59,7 @@ iter_colors_seed = dict(
     pixelLessStepSeeds       = makeColor("dee8c9"),
     tobTecStepSeedsPair      = makeColor("cddcab"),
     tobTecStepSeedsTripl     = makeColor("cddcab"),
-    #siStripTripletStep1Seeds = makeColor("738771"), #used the same as initial FIX ME
+    #siStripTripletStep1Seeds = makeColor("738771"), #comment for now
     jetCoreRegionalStepSeeds = makeColor("c1b3d1"),
     muonSeededSeedsInOut     =  makeColor("e2a8a5"),
     muonSeededSeedsOutIn     =  makeColor("a74a44"),
@@ -755,7 +756,7 @@ def plotEffAndFake(files, prefix, pileup, hasPU70=False, hasCA=False):
 def plotColoredEff(phase1file, prefix, pileup):
     #folder_track = "DQMData/Run 1/Tracking/Run summary/Track/cutsReco%s_trackingParticleRecoAsssociation/"
     #folder_track = "DQMData/Run 1/Tracking/Run summary/Track/cutsReco%sHp_trackingParticleRecoAsssociation/"
-    folder_track = "DQMData/Run 1/Tracking/Run summary/Track/cutsReco%sByOriginalAlgo_trackingParticleRecoAsssociation/"
+    folder_track = "DQMData/Run 1/Tracking/Run summary/Track/cutsReco%sByOriginalAlgo_trackingParticleRecoAsssociation/" 
     iterations = [
         "InitialStep",
         "HighPtTripletStep",
@@ -767,6 +768,7 @@ def plotColoredEff(phase1file, prefix, pileup):
         "PixelPairStep",
         "PixelLessStep",
         "TobTecStep",
+        #"SiStripTripletStep1Seeds", #comment for now 
         "JetCoreRegionalStep",
         "MuonSeededStepInOut",
         "MuonSeededStepOutIn",
@@ -787,7 +789,7 @@ def plotColoredEff(phase1file, prefix, pileup):
         "pixelLessStepSeeds",
         "tobTecStepSeedsPair",
         "tobTecStepSeedsTripl",
-        #"siStripTripletStep1Seeds", 
+        #"siStripTripletStep1Seeds", #comment for now 
         "jetCoreRegionalStepSeeds",
         "muonSeededSeedsInOut",
         "muonSeededSeedsOutIn"
