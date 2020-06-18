@@ -49,11 +49,11 @@ MTVHistoProducerAlgoForTrackerBlock = cms.PSet(
     maxPhi = cms.double(3.1416),
     nintPhi = cms.int32(36),
     #
-    minDxy = cms.double(-60),
+    minDxy = cms.double(-60), #don't cut anymore at 30 
     maxDxy = cms.double(60),
     nintDxy = cms.int32(60),
     #
-    minDz = cms.double(-60),
+    minDz = cms.double(-60),  #don't cut anymore at 30
     maxDz = cms.double(60),
     nintDz = cms.int32(60),
     #
@@ -68,12 +68,12 @@ MTVHistoProducerAlgoForTrackerBlock = cms.PSet(
     minVertpos = cms.double(1e-2),
     maxVertpos = cms.double(100),
     nintVertpos = cms.int32(40),
-    useLogVertpos = cms.untracked.bool(False),
+    useLogVertpos = cms.untracked.bool(False), #unchanged bin size
     #
     # TP originating z position
     minZpos = cms.double(1e-2),
-    maxZpos = cms.double(100),
-    nintZpos = cms.int32(40),
+    maxZpos = cms.double(100), #don't cut anymore at 30
+    nintZpos = cms.int32(40), 
     #
     # dR
     mindr = cms.double(0.001),
