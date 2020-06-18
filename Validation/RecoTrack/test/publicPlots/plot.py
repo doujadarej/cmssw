@@ -967,7 +967,7 @@ def plotColoredEff(phase1file, prefix, pileup):
     # dz
     effbox_dz = effbox.clone()
     #effbox_r.replaceText(1, "p_{T} > 0.9 GeV,")
-   effbox_dz.removeText(1)
+    effbox_dz.removeText(1)
     effbox_dz.addText("p_{T} > 0.9 GeV,", yspace=0.01)
     effbox_dz.addText("|#eta| < 2.5", yspace=0.01)
     effbox_dz.transparent = False
@@ -1013,7 +1013,7 @@ def plotColoredEff(phase1file, prefix, pileup):
 #        "legendDx": -0.3, "legendDy": -0.12, "legendDw": legendDw+0.33, "legendDh": 0.05,
 #        "legendColumns": 2,
 #        "legendTransparent": True,
-        "customiseBeforeLegend": lambda: effbox_seeding_vertpos.Draw(),
+        "customiseBeforeLegend": lambda: effbox_seeding_r.Draw(),
         "drawOpt": "HIST",
     }
     plot = PlotStack()
@@ -1046,7 +1046,7 @@ def plotColoredEff(phase1file, prefix, pileup):
 #        "legendDx": -0.3, "legendDy": -0.12, "legendDw": legendDw+0.33, "legendDh": 0.05,
 #        "legendColumns": 2,
 #        "legendTransparent": True,
-        "customiseBeforeLegend": lambda: effbox_seeding_r.Draw(),
+        "customiseBeforeLegend": lambda: effbox_seeding_z.Draw(),
         "drawOpt": "HIST",
     }
     plot = PlotStack()
