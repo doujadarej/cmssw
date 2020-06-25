@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 TrackingParticleSelectionForEfficiency = cms.PSet(
-    lipTP = cms.double(100), #removed cuts on lip to have all tracks (displaced)
+    lipTP = cms.double(1e5), #removed cuts on lip to have all tracks (displaced)
     chargedOnlyTP = cms.bool(True),
     stableOnlyTP = cms.bool(False),
     pdgIdTP = cms.vint32(),
@@ -12,7 +12,7 @@ TrackingParticleSelectionForEfficiency = cms.PSet(
     ptMinTP = cms.double(0.005),
     ptMaxTP = cms.double(1e100),
     maxRapidityTP = cms.double(2.5),
-    tipTP = cms.double(100), #removed cuts on tip to have all tracks (displaced)
+    tipTP = cms.double(1e5), #removed cuts on tip to have all tracks (displaced)
 )
 
 

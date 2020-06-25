@@ -23,8 +23,8 @@ fastSim.toModify(generalTpSelectorBlock, stableOnly = True)
 TpSelectorForEfficiencyVsEtaBlock = generalTpSelectorBlock.clone()
 TpSelectorForEfficiencyVsPhiBlock = generalTpSelectorBlock.clone()
 TpSelectorForEfficiencyVsPtBlock = generalTpSelectorBlock.clone(ptMin = 0.050)
-TpSelectorForEfficiencyVsVTXRBlock = generalTpSelectorBlock.clone(tip=100, lip=100) #removed cuts on tip and lip for DQM plots vs vertex r position to have all tracks (displaced)
-TpSelectorForEfficiencyVsVTXZBlock = generalTpSelectorBlock.clone(tip=100, lip=100) #removed cuts on tip and lip for DQM plots vs vertex z position to have all tracks (displaced)
+TpSelectorForEfficiencyVsVTXRBlock = generalTpSelectorBlock.clone(tip=1e5, lip=1e5) #removed cuts on tip and lip for DQM plots vs vertex r position to have all tracks (displaced)
+TpSelectorForEfficiencyVsVTXZBlock = generalTpSelectorBlock.clone(tip=1e5, lip=1e5) #removed cuts on tip and lip for DQM plots vs vertex z position to have all tracks (displaced)
 
 def _modifyForPhase1(pset):
     pset.minRapidity = -3
