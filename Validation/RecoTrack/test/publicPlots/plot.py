@@ -39,8 +39,7 @@ iter_colors = dict(
     MixedTripletStep    = makeColor("f4ba8a"),
     PixelLessStep       = makeColor("dee8c9"),
     TobTecStep          = makeColor("cddcab"),
-    SiStripTripletStep1 = makeColor("cde7ff"), #used the same as initial FIX ME
-    SiStripTripletStep2 = makeColor("b2d3f3"), #used the same as HighPtTriplet FIX ME
+    SiStripTripletStep1 = makeColor("738771"),
     JetCoreRegionalStep = makeColor("c1b3d1"),
     MuonSeededStepInOut = makeColor("e2a8a5"),
     MuonSeededStepOutIn = makeColor("a74a44"),
@@ -60,8 +59,7 @@ iter_colors_seed = dict(
     pixelLessStepSeeds       = makeColor("dee8c9"),
     tobTecStepSeedsPair      = makeColor("cddcab"),
     tobTecStepSeedsTripl     = makeColor("cddcab"),
-    siStripTripletStep1Seeds = makeColor("cde7ff"), #used the same as initial FIX ME
-    siStripTripletStep2Seeds = makeColor("b2d3f3"), #used the same as HighPtTriplet FIX ME
+    siStripTripletStep1Seeds = makeColor("738771"),
     jetCoreRegionalStepSeeds = makeColor("c1b3d1"),
     muonSeededSeedsInOut     =  makeColor("e2a8a5"),
     muonSeededSeedsOutIn     =  makeColor("a74a44"),
@@ -395,15 +393,22 @@ def main():
 
     phase0 = (
         #"../DQM_Phase0_ttbar_pu35_v1.root",
-        "/opt/sbg/cms/ui3_data1/ddarej/AddIterationInTracking/AddTwoSiStripTripletsStep/CMSSW_10_6_6/src/RECO_10k_events/DQM_V0001_R000000001__Global__CMSSW_X_Y_Z__RECO.root",
+        #"DQM_Phase0_pu35_v4.root",
         #"Current detector",
+        #"2016",
+        #styleRun2
+        "/opt/sbg/cms/ui3_data1/ddarej/test_SS1NewConfig_DQMplots/CMSSW_10_6_0/src/reco_susy_classifiers0/DQM_V0001_R000000001__Global__CMSSW_X_Y_Z__RECO.root",
         "2016",
         styleRun2
     )
     phase1 = (
         #"../DQM_Phase1_ttbar_pu35_v5.root",
-        "/opt/sbg/cms/ui3_data1/ddarej/AddIterationInTracking/AddTwoSiStripTripletsStep/CMSSW_10_6_6/src/RECO_10k_events/DQM_V0001_R000000001__Global__CMSSW_X_Y_Z__RECO.root",
+        #"DQM_Phase1_pu35_v7.root",
         #"Upgrade detector",
+        #"2017",
+        "/opt/sbg/cms/ui3_data1/ddarej/test_SS1NewConfig_DQMplots/CMSSW_10_6_0/src/reco_susy_classifiers0/DQM_V0001_R000000001__Global__CMSSW_X_Y_Z__RECO.root",
+
+        #stylePhase1
         "2017",
         stylePhase1
     )
@@ -439,7 +444,6 @@ def main():
     ])
 
     files0pu_time = Files([
-        #("/opt/sbg/cms/ui3_data1/ddarej/AddIterationInTracking/AddTwoSiStripTripletsStep/CMSSW_10_6_6/src/11624.0_TTbar_13+TTbar_13TeV_TuneCUETP8M1_2021_GenSimFull+DigiFull_2021+RecoFull_2021+HARVESTFull_2021+ALCAFull_2021/DQM_V0001_R000000001__Global__CMSSW_X_Y_Z__RECO.root","2019_test", stylePU0),
         #("../DQM_Phase0_ttbar_pu0_v1.root", "2016 no PU", stylePU0),
         #("../DQM_Phase0_ttbar_pu35_v1.root", "2016 #LTPU#GT=35", stylePU35),
         #("../DQM_Phase0_ttbar_pu50_v1.root", "2016 #LTPU#GT=50", stylePU50),
@@ -458,39 +462,39 @@ def main():
         #("../DQM_Phase1CA_ttbar_pu70_v5.root", "2017 (CA) #LTPU#GT=70", stylePU70),
     ])
 
-
+#
     pileup = "#LTPU#GT=35"
-
-    #plotEffAndFake(files1, "ttbar_pu35_phase0_phase1", pileup)
-    #plotEffAndFake(files1ca, "ttbar_pu35_phase0_phase1ca", pileup, hasCA=True)
-    #plotEffAndFake(files2, "ttbar_pu35_phase1_ca", pileup, hasCA=True)
-    #plotEffAndFake(files2_pu50, "ttbar_pu50_phase1_ca", pileup.replace("35", "50"), hasCA=True)
-    #plotEffAndFake(files2_pu70, "ttbar_pu70_phase1_ca", pileup.replace("35", "70"), hasPU70=True, hasCA=True)
 #
-    #plotResol(files1, "ttbar_pu35_phase0_phase1", pileup)
-    ##plotResol(files1ca, "ttbar_pu35_phase0_phase1ca", pileup)
-    #plotResol(files2, "ttbar_pu35_phase1_ca", pileup)
+#    plotEffAndFake(files1, "ttbar_pu35_phase0_phase1", pileup)
+#    plotEffAndFake(files1ca, "ttbar_pu35_phase0_phase1ca", pileup, hasCA=True)
+#    plotEffAndFake(files2, "ttbar_pu35_phase1_ca", pileup, hasCA=True)
+#    plotEffAndFake(files2_pu50, "ttbar_pu50_phase1_ca", pileup.replace("35", "50"), hasCA=True)
+#    plotEffAndFake(files2_pu70, "ttbar_pu70_phase1_ca", pileup.replace("35", "70"), hasPU70=True, hasCA=True)
 #
-    #plotVertex(files1, "susy", pileup)
-    ##plotVertex(files1ca, "ttbar_pu35_phase0_phase1ca", pileup)
-    #plotVertex(files2, "ttbar_pu35_phase1_ca", pileup)
+#    plotResol(files1, "ttbar_pu35_phase0_phase1", pileup)
+#    #plotResol(files1ca, "ttbar_pu35_phase0_phase1ca", pileup)
+#    plotResol(files2, "ttbar_pu35_phase1_ca", pileup)
 #
-    ##plotFake(files2, "ttbar_pu35_phase1_tdr", pileup)
-    #plotColoredEff(files1.getFiles()[1], "ttbar_pu35_phase1", pileup)
-    #plotColoredEff(files1ca.getFiles()[1], "ttbar_pu35_phase1ca", pileup)
+#    plotVertex(files1, "ttbar_pu35_phase0_phase1", pileup)
+#    #plotVertex(files1ca, "ttbar_pu35_phase0_phase1ca", pileup)
+#    plotVertex(files2, "ttbar_pu35_phase1_ca", pileup)
 #
-#   # plotDebug(files1_3, "ttbar_pu35_run2debug")
+#    #plotFake(files2, "ttbar_pu35_phase1_tdr", pileup)
+#    plotColoredEff(files1.getFiles()[1], "ttbar_pu35_phase1", pileup)
+#    plotColoredEff(files1ca.getFiles()[1], "ttbar_pu35_phase1ca", pileup)
 #
-    #plotEffAndFake(filespu, "ttbar_phase1_vs_pu", None, hasPU70=True)
-    #plotResol(filespu, "ttbar_phase1_vs_pu", None, hasPU70=True)
-    #plotVertex(filespu, "ttbar_phase1_vs_pu", None, hasPU70=True)
+##    plotDebug(files1_3, "ttbar_pu35_run2debug")
 #
-    #plotEffAndFake(filescapu, "ttbar_phase1_ca_vs_pu", None, hasPU70=True, hasCA=True)
-    #plotResol(filescapu, "ttbar_phase1_ca_vs_pu", None, hasPU70=True)
-    #plotVertex(filescapu, "ttbar_phase1_ca_vs_pu", None, hasPU70=True)
+#    plotEffAndFake(filespu, "ttbar_phase1_vs_pu", None, hasPU70=True)
+#    plotResol(filespu, "ttbar_phase1_vs_pu", None, hasPU70=True)
+#    plotVertex(filespu, "ttbar_phase1_vs_pu", None, hasPU70=True)
 #
-    #plotTime([files0pu_time, filespu_time], "ttbar_phase0_phase1_vs_pu", [0, 35, 50, 70], ["2016", "2017"], [styleRun2, stylePhase1])
-    #plotTime([files0pu_time, filespu_time, filescapu_time], "ttbar_phase0_phase1ca_vs_pu", [0, 35, 50, 70], ["2016", "2017", "2017 (CA)"], [styleRun2, stylePhase1, stylePhase1CA])
+#    plotEffAndFake(filescapu, "ttbar_phase1_ca_vs_pu", None, hasPU70=True, hasCA=True)
+#    plotResol(filescapu, "ttbar_phase1_ca_vs_pu", None, hasPU70=True)
+#    plotVertex(filescapu, "ttbar_phase1_ca_vs_pu", None, hasPU70=True)
+#
+#    plotTime([files0pu_time, filespu_time], "ttbar_phase0_phase1_vs_pu", [0, 35, 50, 70], ["2016", "2017"], [styleRun2, stylePhase1])
+#    plotTime([files0pu_time, filespu_time, filescapu_time], "ttbar_phase0_phase1ca_vs_pu", [0, 35, 50, 70], ["2016", "2017", "2017 (CA)"], [styleRun2, stylePhase1, stylePhase1CA])
 
     # trackingOnly with DQM+validation enabled, 1 thread
     if False:
@@ -556,7 +560,11 @@ def main():
         
         plotMemory("90x_ttbar_phase1_vs_pu", peakrss_trajectory, ["2017 90X IB", "2017 90X IB+#17098"], [stylePhase1, stylePhase1CA])
 
-    plotColoredEff(files1.getFiles()[1], "displacedSUSY", pileup)
+    #printEffFake(files1, pileup)
+    #print("With CA")
+    #printEffFake(files1ca, pileup)
+    plotColoredEff(files1.getFiles()[1], "susy_cuts100_maxcand5_classifiers0", pileup)
+
    
 
 ################################################################################
@@ -621,7 +629,7 @@ def plotEffAndFake(files, prefix, pileup, hasPU70=False, hasCA=False):
 
     # eta
     effbox_eta = effbox.clone()
-#    effbox_eta.replaceText(1, "p_{T} > 0.9 GeV, ^{}d_{0} < 3.5 cm")
+    #effbox_eta.replaceText(1, "p_{T} > 0.9 GeV, ^{}d_{0} < 3.5 cm")
     plot = Plot(files.getHistos(folder_eff+"effic"), files.getLegends(), files.getStyles())
     _common = {
         "xtitle": "Simulated track #eta",
@@ -652,10 +660,10 @@ def plotEffAndFake(files, prefix, pileup, hasPU70=False, hasCA=False):
 
     # pT
     effbox_pt = effbox.clone()
-#    effbox_pt.replaceText(1, "|#eta| < 2.5, ^{}d_{0} < 3.5 cm")
+    effbox_pt.replaceText(1, "|#eta| < 2.5, ^{}d_{0} < 3.5 cm")
     effbox_pt.move(dx=0.05)
     fakebox_pt = fakebox.clone()
-#    fakebox_pt.removeText(1)
+    fakebox_pt.removeText(1)
     plot = Plot(files.getHistos(folder_eff+"efficPt"), files.getLegends(), files.getStyles())
     _common = {
         "xtitle": "Simulated track p_{T} (GeV)",
@@ -691,7 +699,7 @@ def plotEffAndFake(files, prefix, pileup, hasPU70=False, hasCA=False):
     # r
     effbox_r = effbox.clone()
     effbox_r.move(dy=0.6)
-#    effbox_r.replaceText(1, "p_{T} > 0.9 GeV, |#eta| < 2.5")
+    effbox_r.replaceText(1, "p_{T} > 0.9 GeV, |#eta| < 2.5")
     fakebox_r = fakebox.clone()
     fakebox_r.move(dy=-0.55, dx=0.1)
     plot = Plot(files.getHistos(folder_eff+"effic_vs_vertpos"), files.getLegends(), files.getStyles())
@@ -767,8 +775,7 @@ def plotColoredEff(phase1file, prefix, pileup):
         "PixelPairStep",
         "PixelLessStep",
         "TobTecStep",
-#        "SiStripTripletStep1", 
-#        "SiStripTripletStep2",
+        "SiStripTripletStep1", 
         "JetCoreRegionalStep",
         "MuonSeededStepInOut",
         "MuonSeededStepOutIn",
@@ -790,7 +797,6 @@ def plotColoredEff(phase1file, prefix, pileup):
         "tobTecStepSeedsPair",
         "tobTecStepSeedsTripl",
         "siStripTripletStep1Seeds", 
-        "siStripTripletStep2Seeds",
         "jetCoreRegionalStepSeeds",
         "muonSeededSeedsInOut",
         "muonSeededSeedsOutIn"
@@ -802,7 +808,6 @@ def plotColoredEff(phase1file, prefix, pileup):
     legendLabels_seeds = [x.replace("Step", "").replace("Regional", "").replace("SeededInOut", " inside-out").replace("SeededOutIn", " outside-in") for x in iterationsseed]
     legendLabels_seeds[1:] = ["+"+x for x in legendLabels_seeds[1:]]
 
-
     putext = ""
     if pileup is not None:
         putext = " (%s)" % pileup
@@ -811,13 +816,13 @@ def plotColoredEff(phase1file, prefix, pileup):
     xmax = 0.87
     legendDw = 0
     effbox = PlotTextBox(xmin, None, xmax, 0.31, transparent=True)
-#    effbox.addText("t#bar{t} event tracks%s"%putext)
-#    effbox.addText("p_{T} > 0.9 GeV, |#eta| < 2.5, ^{}d_{0} < 3.5 cm")
+    #effbox.addText("t#bar{t} event tracks%s"%putext)
+    #effbox.addText("p_{T} > 0.9 GeV, |#eta| < 2.5, ^{}d_{0} < 3.5 cm")
 
     # pt
     effbox_pt = effbox.clone()
     #effbox_pt.replaceText(1, "|#eta| < 2.5, ^{}d_{0} < 3.5 cm")
-    effbox_pt.move(dx=0.06, dy=-0.02)
+    #effbox_pt.move(dx=0.06, dy=-0.02)
 #    effbox_pt.move(dx=-0.13, dy=0.6)
     plot = PlotStack()
     for it, leg in zip(iterations, legendLabels):
@@ -842,8 +847,8 @@ def plotColoredEff(phase1file, prefix, pileup):
 
     # eta
     effbox_eta = effbox.clone()
-#    effbox_eta.replaceText(1, "p_{T} > 0.9 GeV, ^{}d_{0} < 3.5 cm")
-    effbox_eta.move(dx=0.06, dy=-0.02)
+    #effbox_eta.replaceText(1, "p_{T} > 0.9 GeV, ^{}d_{0} < 3.5 cm")
+    #effbox_eta.move(dx=0.06, dy=-0.02)
 #    effbox_pt.move(dx=-0.13, dy=0.6)
     plot = PlotStack()
     for it, leg in zip(iterations, legendLabels):
@@ -867,9 +872,9 @@ def plotColoredEff(phase1file, prefix, pileup):
     # r
     effbox_r = effbox.clone()
     #effbox_r.replaceText(1, "p_{T} > 0.9 GeV,")
-#    effbox_r.removeText(1)
-#    effbox_r.addText("p_{T} > 0.9 GeV,", yspace=0.01)
-#    effbox_r.addText("|#eta| < 2.5", yspace=0.01)
+    #effbox_r.removeText(1)
+    #effbox_r.addText("p_{T} > 0.9 GeV,", yspace=0.01)
+    #effbox_r.addText("|#eta| < 2.5", yspace=0.01)
     effbox_r.transparent = False
     effbox_r.move(dx=-0.1, dy=0.6)
     _common = {
@@ -890,7 +895,7 @@ def plotColoredEff(phase1file, prefix, pileup):
         #    raise Exception("Did not find %s from %s" % (hname, phase1file.GetName()))
         num_name = folder_track%it + "num_assoc(simToReco)_vertpos"
         denom_name = folder_track%it + "num_simul_vertpos"
-        eff = calculateEfficiency(phase1file, num_name, denom_name, rebin=1)
+        eff = calculateEfficiency(phase1file, num_name, denom_name, rebin=2)
         eff.SetFillColor(iter_colors[it])
         eff.SetLineColor(ROOT.kBlack)
         plot.add(eff, leg)
@@ -909,7 +914,7 @@ def plotColoredEff(phase1file, prefix, pileup):
     effbox_z.move(dx=-0.1, dy=0.6)
     _common = {
         "xtitle": "Sim. track prod. vertex z (cm)",
-        "xmin": 0, "xmax": 30, "ymin": 0, "ymax": 1.2,
+        "xmin": 0, "xmax": 100, "ymin": 0, "ymax": 1.2,
         "legendDx": 0.02, "legendDy": -0.07, "legendDw": legendDw, "legendDh": 0.23,
 #        "legendDx": -0.3, "legendDy": -0.12, "legendDw": legendDw+0.33, "legendDh": 0.05,
 #        "legendColumns": 2,
@@ -942,7 +947,7 @@ def plotColoredEff(phase1file, prefix, pileup):
     effbox_dxy.move(dx=-0.1, dy=0.6)
     _common = {
         "xtitle": " dxy (cm)",
-        "xmin": 0, "xmax": 30, "ymin": 0, "ymax": 1.2,
+        "xmin": 0, "xmax": 40, "ymin": 0, "ymax": 1.2,
         "legendDx": 0.02, "legendDy": -0.07, "legendDw": legendDw, "legendDh": 0.23,
 #        "legendDx": -0.3, "legendDy": -0.12, "legendDw": legendDw+0.33, "legendDh": 0.05,
 #        "legendColumns": 2,
@@ -976,7 +981,7 @@ def plotColoredEff(phase1file, prefix, pileup):
     effbox_dz.move(dx=-0.1, dy=0.6)
     _common = {
         "xtitle": " dz (cm)",
-        "xmin": 0, "xmax": 30, "ymin": 0, "ymax": 1.2,
+        "xmin": 0, "xmax": 60, "ymin": 0, "ymax": 1.2,
         "legendDx": 0.02, "legendDy": -0.07, "legendDw": legendDw, "legendDh": 0.23,
 #        "legendDx": -0.3, "legendDy": -0.12, "legendDw": legendDw+0.33, "legendDh": 0.05,
 #        "legendColumns": 2,
@@ -998,7 +1003,7 @@ def plotColoredEff(phase1file, prefix, pileup):
         plot.add(eff, leg)
 
     drawPlot(prefix+"_efficiency_dz_cum", plot, ytitle="Tracking efficiency", **_common)
-
+ 
 
     # seeding_vertpos
     effbox_seeding_r = effbox.clone()
@@ -1032,6 +1037,40 @@ def plotColoredEff(phase1file, prefix, pileup):
         plot.add(eff, leg)
 
     drawPlot(prefix+"_efficiency_seeding_r_cum", plot, ytitle="Tracking efficiency", **_common)
+    
+    # seeding_zpos
+    effbox_seeding_z = effbox.clone()
+    #effbox_z.replaceText(1, "p_{T} > 0.9 GeV,")
+#    effbox_seeding_z.removeText(1)
+#    effbox_seeding_z.addText("p_{T} > 0.9 GeV,", yspace=0.01)
+#    effbox_seeding_z.addText("|#eta| < 2.5", yspace=0.01)
+    effbox_seeding_z.transparent = False
+    effbox_seeding_z.move(dx=-0.1, dy=0.6)
+    _common = {
+        "xtitle": " seeding_z (cm)",
+        "xmin": 0, "xmax": 60, "ymin": 0, "ymax": 1.2,
+        "legendDx": 0.02, "legendDy": -0.07, "legendDw": legendDw, "legendDh": 0.23,
+#        "legendDx": -0.3, "legendDy": -0.12, "legendDw": legendDw+0.33, "legendDh": 0.05,
+#        "legendColumns": 2,
+#        "legendTransparent": True,
+        "customiseBeforeLegend": lambda: effbox_z.Draw(),
+        "drawOpt": "HIST",
+    }
+    plot = PlotStack()
+    for it, leg in zip(iterationsseed, legendLabels_seeds):
+        #hname = folder_track%it + "effic_vs_zpos"
+        #h = phase1file.Get(hname)
+        #if not h:
+        #    raise Exception("Did not find %s from %s" % (hname, phase1file.GetName()))
+        num_name = folder_seeding%it + "num_assoc(simToReco)_zpos"
+        denom_name = folder_seeding%it + "num_simul_zpos"
+        eff = calculateEfficiency(phase1file, num_name, denom_name, rebin=1)
+        eff.SetFillColor(iter_colors_seed[it])
+        eff.SetLineColor(ROOT.kBlack)
+        plot.add(eff, leg)
+
+    drawPlot(prefix+"_efficiency_seeding_z_cum", plot, ytitle="Tracking efficiency", **_common)
+    
 
 ################################################################################
 ################################################################################
@@ -1039,7 +1078,6 @@ def plotColoredEff(phase1file, prefix, pileup):
 def plotFake(files, prefix, pileup):
     folder_track = "Tracking/Run summary/Track/"
     folder_vertex = "Vertexing/Run summary/PrimaryVertexV/"
-    folder_seeding = "Tracking/Run summary/TrackSeeding/"
 
     iterations = [
         "InitialStep",
@@ -1051,8 +1089,7 @@ def plotFake(files, prefix, pileup):
         "MixedTripletStep",
         "PixelLessStep",
         "TobTecStep",
-        "SiStripTripletStep1",
-        "SiStripTripletStep2", 
+        #"SiStripTripletStep1", #comment for now
         "JetCoreRegionalStep",
         "MuonSeededStepInOut",
         "MuonSeededStepOutIn",
@@ -1122,7 +1159,7 @@ def plotResol(files, prefix, pileup, hasPU70=False):
 
     effbox = PlotTextBox(xmin, None, xmax, 0.85, transparent=False)
     effbox.addText("t#bar{t} event tracks%s"%putext)
-    effbox.addText("p_{T} > 0.9 GeV, ^{}d_{0} < 3.5 cm")
+#    effbox.addText("p_{T} > 0.9 GeV, ^{}d_{0} < 3.5 cm")
 
     vertbox = PlotTextBox(xmin, None, xmax-0.15, 0.85, transparent=False)
     vertbox.addText("t#bar{t} events%s"%putext)
@@ -1330,12 +1367,12 @@ def plotTime(fileCollections, prefix, pileups, legends, styles):
     xmax = 0.87
     legendDw = -0.1
     vertbox = PlotTextBox(xmin, None, xmax-0.3, 0.7, transparent=False)
-#    vertbox.addText("t#bar{t} events")
+    vertbox.addText("t#bar{t} events")
 
     relbox = vertbox.clone()
     #relbox.addText("2016 no PU tracking time = 1")
-#    relbox.addText("tracking time of", yspace=0.01)
-#    relbox.addText("2016 no PU = 1")
+    relbox.addText("tracking time of", yspace=0.01)
+    relbox.addText("2016 no PU = 1")
 
     creator = plotting.AggregateBins("iteration", "reconstruction_step_module_average", trackingPlots._iterModuleMap(includeConvStep=False), ignoreMissingBins=True)
 
