@@ -45,8 +45,6 @@ namespace {
         srcMVAs.push_back(consumes<MVACollection>(edm::InputTag(it, "MVAValues")));
         srcQuals.push_back(consumes<QualityMaskCollection>(edm::InputTag(it, "QualityMasks")));
       }
-      std::cout<<"srcColls size"<<srcColls.size()<<std::endl; 
-      std::cout<<"srcQuals size"<<srcQuals.size()<<std::endl;
 
       assert(srcColls.size() == srcQuals.size());
 
