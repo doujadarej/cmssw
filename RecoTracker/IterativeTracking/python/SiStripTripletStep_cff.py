@@ -167,7 +167,7 @@ siStripTripletStepTrackCandidates = RecoTracker.CkfPattern.CkfTrackCandidates_cf
     onlyPixelHitsForSeedCleaner = cms.bool(True),
 
     TrajectoryBuilderPSet = cms.PSet(refToPSet_ = cms.string('siStripTripletStepTrajectoryBuilder')),
-    #clustersToSkip = cms.InputTag('siStripTripletStepClusters'),
+    clustersToSkip = cms.InputTag('siStripTripletStepClusters'),
     doSeedingRegionRebuilding = True,
     useHitsSplitting = True,
     cleanTrajectoryAfterInOut = True
