@@ -60,9 +60,9 @@ modulesLabel  ['FullIterTracking'] = cms.vstring(
        'tobTecStepSeeds_iter6',
        'tobTecStepTrackCandidates_iter6',
        'tobTecStepTracks_iter6',
-       'siStripTripletStep1Seeds_iter7',
-       'siStripTripletStep1TrackCandidates_iter7',
-       'siStripTripletStep1Tracks_iter7',
+       'siStripTripletStepSeeds_iter7',
+       'siStripTripletStepTrackCandidates_iter7',
+       'siStripTripletStepTracks_iter7',
        'photonConvTrajSeedFromSingleLeg',
        'convTrackCandidates',
        'convStepTracks',
@@ -99,9 +99,9 @@ modulesLabel  ['IterTracking'] = cms.vstring(
        'tobTecStepSeeds_iter6',
        'tobTecStepTrackCandidates_iter6',
        'tobTecStepTracks_iter6',
-       'siStripTripletStep1Seeds_iter7',
-       'siStripTripletStep1TrackCandidates_iter7',
-       'siStripTripletStep1Tracks_iter7'
+       'siStripTripletStepSeeds_iter7',
+       'siStripTripletStepTrackCandidates_iter7',
+       'siStripTripletStepTracks_iter7'
 )
 categories['IterTracking']     = cms.vstring(
     'TooManyClusters',
