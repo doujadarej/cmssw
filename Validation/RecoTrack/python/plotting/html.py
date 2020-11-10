@@ -142,6 +142,7 @@ _trackAlgoOrder = [
     'mixedTripletStep',
     'pixelLessStep',
     'tobTecStep',
+    'siStripTripletStep',
     'jetCoreRegionalStep',
     'muonSeededStepInOut',
     'muonSeededStepOutIn',
