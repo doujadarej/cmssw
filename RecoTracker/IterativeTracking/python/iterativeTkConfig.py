@@ -35,7 +35,7 @@ _iterations_trackingLowPU = [
     "MixedTripletStep",
     "PixelLessStep",
     "TobTecStep",
-    #"SiStripTripletStep",
+    "SiStripTripletStep",
 ]
 _iterations_displacedTracking = [
     "InitialStep",
@@ -59,7 +59,7 @@ _iterations_trackingPhase1 = [
     "MixedTripletStep",
     "PixelLessStep",
     "TobTecStep",
-    #"SiStripTripletStep",
+    "SiStripTripletStep",
     "JetCoreRegionalStep",
 ]
 _iterations_trackingPhase2PU140 = [

@@ -35,7 +35,7 @@ trackingLowPU.toModify(earlyGeneralTracks,
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
         'tobTecStepTracks',
-        #'siStripTripletStepTracks'
+        'siStripTripletStepTracks'
     ],
     inputClassifiers = [
         'initialStepSelector',
@@ -45,7 +45,7 @@ trackingLowPU.toModify(earlyGeneralTracks,
         'mixedTripletStep',
         'pixelLessStepSelector',
         'tobTecStep',
-        #'siStripTripletStep'
+        'siStripTripletStep'
     ]
 )
 from Configuration.Eras.Modifier_displacedTracking_cff import displacedTracking
@@ -90,7 +90,7 @@ _forPhase1 = dict(
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
         'tobTecStepTracks',
-        #'siStripTripletStepTracks'
+        'siStripTripletStepTracks'
     ],
     inputClassifiers = [
         'initialStep',
@@ -104,7 +104,7 @@ _forPhase1 = dict(
         'mixedTripletStep',
         'pixelLessStep',
         'tobTecStep', 
-        #'siStripTripletStep'
+        'siStripTripletStep'
     ],
 )
 trackingPhase1.toModify(earlyGeneralTracks, **_forPhase1)
