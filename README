@@ -1,1 +1,54 @@
-Introduction to CMSSW: http://cms-sw.github.io
+Instruction : 
+
+mkdir project_SST_test
+cd project_SST_test
+cmsrel CMSSW_11_2_0_pre8
+cd src 
+cmsenv
+git-cms-init 
+git pull https://github.com/doujadarej/cmssw SiStripTriplet_AfterPR
+git cms-addpkg DQM/TrackingMonitorSource
+git cms-addpkg DataFormats/TrackReco
+git cms-addpkg RecoParticleFlow/PFTracking
+git cms-addpkg RecoTracker
+git cms-addpkg Validation/RecoTrack 
+git cms-addpkg Configuration/Eras
+
+
+scramv1 b -j6 
+
+---------
+
+copy step2.root from (generated with runTheMatrix.py 11834.0) :
+cp /opt/sbg/cms/ui3_data1/ddarej/AfterPR_SST/CMSSW_11_2_0_pre8/src/11834.0_TTbar_14TeV+2021PU+TTbar_14TeV_TuneCP5_GenSim+DigiPU+RecoPU+HARVESTPU+Nano/step2.root . 
+
+copy step3_trackingPerf.py (generated with runTheMatrix.py 11834.0 and added TrackingNTuple to check quickly the output of algo) 
+cp /opt/sbg/cms/ui3_data1/ddarej/AfterPR_SST/CMSSW_11_2_0_pre8/src/11834.0_TTbar_14TeV+2021PU+TTbar_14TeV_TuneCP5_GenSim+DigiPU+RecoPU+HARVESTPU+Nano/step3_trackingNTuple.py . 
+
+
+and run step3 by doing :
+cmsDriver.py step3_trackingNTuple.py 
+I advise to run on just 3 events so that its quicker 
+
+to check the algos that work go to trackingNTuple.root > tree_track_algo 
+NB : SiStripTriplet is now iteration 25
+
+by default, step3 runs with standard tracking sequence 
+for now I let SiStripTriplet in standard sequence and all other sequences, but already wrote modifier "displacedTracking"
+
+----------
+
+
+
+Modifier is simply defined in : Configuration/Eras/python/Modifier_displacedTracking_cff.py
+IMO, the two files that need to change are :
+src/RecoTracker/FinalTrackSelectors/python/earlyGeneralTracks_cfi.py
+and 
+src/RecoTracker/IterativeTracking/python/iterativeTkConfig.py
+maybe others too ?
+
+
+--------- 
+When you want to add the modifier go to step3_trackingNTuple.py, comment the line 10 and uncomment the lines 15 and 16 
+
+to rerun -> cmsDriver.py step3_trackingNTuple.root 
