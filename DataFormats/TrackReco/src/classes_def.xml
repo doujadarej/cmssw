@@ -10,8 +10,7 @@
    <version ClassVersion="11" checksum="639174599"/>
    <version ClassVersion="10" checksum="2022291691"/>
   </class>
-  <class name="reco::TrackBase" ClassVersion="21">
-   <version ClassVersion="21" checksum="736909542"/>
+  <class name="reco::TrackBase" ClassVersion="20">
    <version ClassVersion="20" checksum="1589774059"/>
    <version ClassVersion="19" checksum="4090229239"/>
    <version ClassVersion="18" checksum="1935215297"/>
@@ -53,11 +52,9 @@
       >
       <![CDATA[
             using namespace reco;
-
             const unsigned short HitSize = 11;
             const unsigned short PatternSize = 25;
             const int MaxHits = (PatternSize * sizeof(uint32_t) * 8) / HitSize;
-
             auto getHitFromOldHitPattern = [](const uint32_t hitPattern[], const int position) {
                 uint16_t bitEndOffset = (position + 1) * HitSize;
                 uint8_t secondWord   = (bitEndOffset >> 5);
@@ -73,13 +70,11 @@
                     return firstWordBlock + (secondWordBlock << firstWordBits);
                 }
             };
-
             auto appendOldHitPattern = [&](const uint32_t pattern) {
                 // value used for those parameters needed by XXXDetId constructors
                 // but that we do not care about because they are not stored in the
                 // HitPattern.
                 const uint8_t DONT_CARE = 1;
-
                 const static unsigned short HitTypeMask = 0x3;
                 const static unsigned short HitTypeOffset = 0;
                 
@@ -88,30 +83,24 @@
                 
                 const static unsigned short LayerMask = 0xF;
                 const static unsigned short LayerOffset = 3;
-
                 const static unsigned short SubstrMask = 0x7;
                 const static unsigned short SubstrOffset = 7;
-
                 const static unsigned short SubDetectorMask = 0x1;
                 const static unsigned short SubDetectorOffset = 10;
-
                 const uint32_t VALID_CONST = (uint32_t) TrackingRecHit::valid;
                 const uint32_t MISSING_CONST = (uint32_t) TrackingRecHit::missing;
                 const uint32_t INACTIVE_CONST = (uint32_t) TrackingRecHit::inactive;
                 const uint32_t BAD_CONST = (uint32_t) TrackingRecHit::bad;
-
                 uint32_t rawHitType = (pattern >> HitTypeOffset) & HitTypeMask;
                 uint32_t layer = (pattern >> LayerOffset) & LayerMask;
                 uint32_t subdet = (pattern >> SubstrOffset) & SubstrMask;
                 uint32_t detector = (pattern >> SubDetectorOffset) & SubDetectorMask;
                 uint32_t stereo = (pattern >> SideOffset) & SideMask;
-
                 // DetId::Tracker = 1 and DetId::Muon = 2 but
                 // in HitPattern Tracker = 1 and Muon = 0 so a conversion is needed:
                 if (detector == 0) {
                     detector = DetId::Muon;
                 }
-
                 TrackingRecHit::Type hitType = TrackingRecHit::valid;
                 switch (rawHitType) {
                 case VALID_CONST:
@@ -127,7 +116,6 @@
                     hitType = TrackingRecHit::bad;
                     break;
                 }
-
                 DetId detId;
                 if (detector == DetId::Tracker) {
                     return newObj->appendTrackerHit(subdet, layer, stereo, hitType);
@@ -157,7 +145,6 @@
                 }
                 return false;
             };
-
             auto fillNewHitPatternWithOldHitPattern = [&](const uint32_t oldHitPattern[]) {
                 newObj->clear();
                 for (int i = 0; i < MaxHits; i++) {
@@ -171,7 +158,6 @@
                 }
                 return true;
             };
-
             fillNewHitPatternWithOldHitPattern(onfile.hitPattern_);
       ]]>
  </ioread>
@@ -186,37 +172,29 @@
       include="DataFormats/TrackReco/interface/HitPattern.h">
       <![CDATA[
             using namespace reco;
-
             auto appendNewHitPattern = [&](const uint16_t pattern, const HitPattern::HitCategory category) {
                 // value used for those parameters needed by XXXDetId constructors
                 // but that we do not care about.
                 const uint8_t DONT_CARE = 1;
-
                 const uint16_t VALID_CONST = (uint16_t) TrackingRecHit::valid;
                 const uint16_t MISSING_CONST = (uint16_t) TrackingRecHit::missing;
                 const uint16_t INACTIVE_CONST = (uint16_t) TrackingRecHit::inactive;
                 const uint16_t BAD_CONST = (uint16_t) TrackingRecHit::bad;
-
                 // 3 bits for hit type
                 const static unsigned short HitTypeMask = 0x3;
                 const static unsigned short HitTypeOffset = 0;
-
                 // 1 bit for mono/stereo
                 const static unsigned short SideMask = 0x1;
                 const static unsigned short SideOffset = 2;
-
                 // 4 bits to identify the layer/disk/wheel within the substructure
                 const static unsigned short LayerMask = 0xF;
                 const static unsigned short LayerOffset = 3;
-
                 // 3 bits to identify the tracker/muon detector substructure
                 const static unsigned short SubstrMask = 0x7;
                 const static unsigned short SubstrOffset = 7;
-
                 // 1 bit to distinguish tracker and muon subsystems
                 const static unsigned short SubDetectorMask = 0x1;
                 const static unsigned short SubDetectorOffset = 10;
-
                 uint16_t rawHitType = (pattern >> HitTypeOffset) & HitTypeMask;
                 uint16_t layer = (pattern >> LayerOffset) & LayerMask;
                 uint16_t subdet = (pattern >> SubstrOffset) & SubstrMask;
@@ -228,7 +206,6 @@
                 if (detector == 0) {
                     detector = DetId::Muon;
                 }
-
                 TrackingRecHit::Type hitType = TrackingRecHit::valid;
                 switch (rawHitType) {
                 case VALID_CONST:
@@ -244,13 +221,11 @@
                     hitType = TrackingRecHit::bad;
                     break;
                 }
-
                 if (category == HitPattern::MISSING_INNER_HITS) {
                     hitType = TrackingRecHit::missing_inner;
                 } else if (category == HitPattern::MISSING_OUTER_HITS) {
                     hitType = TrackingRecHit::missing_outer;
                 }
-
                 DetId detId;
                 if (detector == DetId::Tracker) {
                     return newObj->appendTrackerHitPattern(subdet, layer, stereo, hitType);
@@ -280,7 +255,6 @@
                 }
                 return false;
             };
-
             auto fillNewHitPatternFromNewHitPattern = [&](const HitPattern hitPattern, const HitPattern::HitCategory category) {
                 uint8_t hitCount = hitPattern.numberOfAllHits(HitPattern::TRACK_HITS);
                 for (int i = 0; i < hitCount; i++) {
@@ -291,14 +265,12 @@
                 }
                 return true;
             };
-
             auto mergeNewHitPatternsIntoOneNewHitPattern = [&](void) {
                 newObj->resetHitPattern();
                 fillNewHitPatternFromNewHitPattern(onfile.hitPattern_, HitPattern::TRACK_HITS);
                 fillNewHitPatternFromNewHitPattern(onfile.trackerExpectedHitsInner_, HitPattern::MISSING_INNER_HITS);
                 fillNewHitPatternFromNewHitPattern(onfile.trackerExpectedHitsOuter_, HitPattern::MISSING_OUTER_HITS);
             };
-
             mergeNewHitPatternsIntoOneNewHitPattern();
       ]]>
  </ioread>
@@ -336,9 +308,8 @@
   <class name="edm::Ref<std::vector<reco::TrackExtra>,reco::TrackExtra,edm::refhelper::FindUsingAdvance<std::vector<reco::TrackExtra>,reco::TrackExtra> >"/>
   <class name="edm::RefVector<std::vector<reco::TrackExtra>,reco::TrackExtra,edm::refhelper::FindUsingAdvance<std::vector<reco::TrackExtra>,reco::TrackExtra> >"/>
 
-  <class name="reco::Track" ClassVersion="21">
-   <version ClassVersion="21" checksum="1132360123"/>
-   <version ClassVersion="20" checksum="1132360123"/>
+  <class name="reco::Track" ClassVersion="20">
+   <version ClassVersion="20" checksum="2864582648"/>
    <version ClassVersion="19" checksum="362503460"/>
    <version ClassVersion="18" checksum="3235158110"/>
    <version ClassVersion="17" checksum="3387867292"/>

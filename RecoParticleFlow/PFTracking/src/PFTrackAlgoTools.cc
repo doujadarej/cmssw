@@ -24,7 +24,6 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::pixelLessStep:
         return cuts[3];
       case reco::TrackBase::tobTecStep:
-      case reco::TrackBase::siStripTripletStep:
         return cuts[4];
       case reco::TrackBase::muonSeededStepInOut:
       case reco::TrackBase::muonSeededStepOutIn:
@@ -65,7 +64,6 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::pixelLessStep:
         return cuts[3];
       case reco::TrackBase::tobTecStep:
-      case reco::TrackBase::siStripTripletStep:
         return cuts[4];
       case reco::TrackBase::muonSeededStepInOut:
       case reco::TrackBase::muonSeededStepOutIn:
@@ -110,7 +108,6 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::pixelLessStep:
         return errorScale[0];
       case reco::TrackBase::tobTecStep:
-      case reco::TrackBase::siStripTripletStep:
         return errorScale[1];
       default:
         return 1E9;
@@ -187,7 +184,6 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::hltIterX:
         return false;
       case reco::TrackBase::tobTecStep:
-      case reco::TrackBase::siStripTripletStep:
         return true;
       default:
         return true;
@@ -227,7 +223,6 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::mixedTripletStep:
       case reco::TrackBase::pixelLessStep:
       case reco::TrackBase::tobTecStep:
-      case reco::TrackBase::siStripTripletStep:
         return true;
       default:
         return false;

@@ -123,9 +123,9 @@ seedMonitoring['tobTecStep'] = cms.PSet(
     clusterMax       = cms.double(100000),
 )
 
-seedMonitoring['siStripTripletStep'] = cms.PSet(
-    seedInputTag     = cms.InputTag("siStripTripletStepSeeds"),
-    trackCandInputTag= cms.InputTag("siStripTripletStepTrackCandidates"),
+seedMonitoring['displacedGeneralStep'] = cms.PSet(
+    seedInputTag     = cms.InputTag("displacedGeneralStepSeeds"),
+    trackCandInputTag= cms.InputTag("displacedGeneralStepTrackCandidates"),
     trackSeedSizeBin = cms.int32(400),
     trackSeedSizeMin = cms.double(0),
     trackSeedSizeMax = cms.double(100000),

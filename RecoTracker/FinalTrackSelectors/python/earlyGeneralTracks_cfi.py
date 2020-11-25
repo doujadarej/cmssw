@@ -11,8 +11,7 @@ earlyGeneralTracks =  TrackCollectionMerger.clone(
                       'detachedTripletStepTracks',
                       'mixedTripletStepTracks',
                       'pixelLessStepTracks',
-                      'tobTecStepTracks',
-                      'siStripTripletStepTracks'
+                      'tobTecStepTracks'
                       ],
     inputClassifiers =['initialStep',
                        'jetCoreRegionalStep',
@@ -21,8 +20,7 @@ earlyGeneralTracks =  TrackCollectionMerger.clone(
                        'detachedTripletStep',
                        'mixedTripletStep',
                        'pixelLessStep',
-                       'tobTecStep',
-                       'siStripTripletStep'
+                       'tobTecStep'
                        ]
 )
 from Configuration.Eras.Modifier_trackingLowPU_cff import trackingLowPU
@@ -34,8 +32,7 @@ trackingLowPU.toModify(earlyGeneralTracks,
         'detachedTripletStepTracks',
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
-        'tobTecStepTracks',
-        'siStripTripletStepTracks'
+        'tobTecStepTracks'
     ],
     inputClassifiers = [
         'initialStepSelector',
@@ -44,8 +41,7 @@ trackingLowPU.toModify(earlyGeneralTracks,
         'detachedTripletStep',
         'mixedTripletStep',
         'pixelLessStepSelector',
-        'tobTecStep',
-        'siStripTripletStep'
+        'tobTecStep'
     ]
 )
 from Configuration.Eras.Modifier_trackingPhase1_cff import trackingPhase1
@@ -61,8 +57,7 @@ _forPhase1 = dict(
         'pixelPairStepTracks',
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
-        'tobTecStepTracks',
-        'siStripTripletStepTracks'
+        'tobTecStepTracks'
     ],
     inputClassifiers = [
         'initialStep',
@@ -75,11 +70,16 @@ _forPhase1 = dict(
         'pixelPairStep',
         'mixedTripletStep',
         'pixelLessStep',
-        'tobTecStep', 
-        'siStripTripletStep'
+        'tobTecStep'
     ],
 )
 trackingPhase1.toModify(earlyGeneralTracks, **_forPhase1)
+
+from Configuration.ProcessModifiers.displacedTracking_cff import displacedTracking
+def _extend_displacedGeneral(x):
+     x.trackProducers += ['displacedGeneralStepTracks']
+     x.inputClassifiers += ['displacedGeneralStep'] 
+(trackingPhase1 & displacedTracking).toModify(earlyGeneralTracks, _extend_displacedGeneral)
 
 # For Phase2PU140
 from Configuration.Eras.Modifier_trackingPhase2PU140_cff import trackingPhase2PU140

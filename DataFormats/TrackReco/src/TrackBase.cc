@@ -31,7 +31,7 @@ std::string const TrackBase::algoNames[] = {"undefAlgorithm",
                                             "highPtTripletStep",
                                             "lowPtQuadStep",
                                             "detachedQuadStep",
-                                            "reservedForUpgrades1",
+                                            "displacedGeneralStep",
                                             "reservedForUpgrades2",
                                             "bTagGhostTracks",
                                             "beamhalo",
@@ -51,8 +51,7 @@ std::string const TrackBase::algoNames[] = {"undefAlgorithm",
                                             "hiRegitMuPixelLessStep",
                                             "hiRegitMuTobTecStep",
                                             "hiRegitMuMuonSeededStepInOut",
-                                            "hiRegitMuMuonSeededStepOutIn",
-                                            "siStripTripletStep"};
+                                            "hiRegitMuMuonSeededStepOutIn"};
 
 std::string const TrackBase::qualityNames[] = {
     "loose", "tight", "highPurity", "confirmed", "goodIterative", "looseSetWithPV", "highPuritySetWithPV", "discarded"};

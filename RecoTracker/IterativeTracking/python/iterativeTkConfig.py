@@ -24,7 +24,6 @@ _iterations = [
     "MixedTripletStep",
     "PixelLessStep",
     "TobTecStep",
-    "SiStripTripletStep",
     "JetCoreRegionalStep",
 ]
 _iterations_trackingLowPU = [
@@ -35,7 +34,6 @@ _iterations_trackingLowPU = [
     "MixedTripletStep",
     "PixelLessStep",
     "TobTecStep",
-    "SiStripTripletStep",
 ]
 _iterations_trackingPhase1 = [
     "InitialStep",
@@ -48,9 +46,13 @@ _iterations_trackingPhase1 = [
     "MixedTripletStep",
     "PixelLessStep",
     "TobTecStep",
-    "SiStripTripletStep",
-    "JetCoreRegionalStep",
 ]
+
+from Configuration.ProcessModifiers.displacedTracking_cff import displacedTracking
+displacedTracking.toModify(_iterations_trackingPhase1, func=lambda x: x.append('DisplacedGeneralStep'))
+
+_iterations_trackingPhase1.append('JetCoreRegionalStep')
+
 _iterations_trackingPhase2PU140 = [
     "InitialStep",
     "HighPtTripletStep",
