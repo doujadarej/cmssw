@@ -126,22 +126,27 @@ for a in process.aliases: delattr(process, a)
 
 
 process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
-      tracks               = cms.untracked.InputTag('generalTracks'),
-      trackLabel           = cms.InputTag('generalTracks'),
-      #trackAssociator      = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation'),
-      #trackAssociator      = cms.untracked.InputTag('trackAssociatorByHits'),
-      trackAssociator      = cms.untracked.InputTag('quickTrackAssociatorByHits'),
-      beamSpot             = cms.untracked.InputTag('offlineBeamSpot'),
-      parametersDefiner    = cms.untracked.string('LhcParametersDefinerForTP'),
-      #trackingParticles    = cms.untracked.InputTag('trackingParticlesIntime'),
-      trackingParticles    = cms.untracked.InputTag('trackingParticlesIntime'),
-      trackingParticlesRef = cms.untracked.bool(True),
-      TTRHBuilder          = cms.string('WithTrackAngle'),
-      useCluster           = cms.untracked.bool(False),
-      vertices             = cms.untracked.InputTag('offlinePrimaryVertices'),
-      jetInput             = cms.InputTag('ak4PFJets'), 
-      gsftrack         = cms.InputTag('electronGsfTracks'),
-
+      tracks                   = cms.untracked.InputTag('generalTracks'),
+      trackLabel               = cms.InputTag('generalTracks'),
+      trackingParticles        = cms.untracked.InputTag('trackingParticlesIntime'),
+      trackingParticlesRef     = cms.untracked.bool(True),
+      #trackAssociator         = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation'),
+      trackAssociator          = cms.untracked.InputTag('quickTrackAssociatorByHits'),
+      beamSpot                 = cms.untracked.InputTag('offlineBeamSpot'),
+      vertices                 = cms.untracked.InputTag('offlinePrimaryVertices'),
+      jetInput                 = cms.InputTag('ak4PFJets'), 
+      #metInput                = cms.InputTag('patMETsPFlow'),
+      genParticles             = cms.InputTag('genParticles'),
+      genJetInput              = cms.InputTag("slimmedGenJets"),
+      genEventInfoInput        = cms.InputTag("generator"),
+      LHEEventProductInput     = cms.InputTag("externalLHEProducer"),
+      pfcands                  = cms.InputTag("packedPFCandidates"),
+      parametersDefiner        = cms.untracked.string('LhcParametersDefinerForTP'),      
+      #electronInput            = cms.untracked.InputTag("slimmedElectrons"),
+      electronInput            = cms.InputTag("patElectronsPFlow"),
+      muonInput                = cms.InputTag("slimmedMuons"),
+      TTRHBuilder              = cms.string('WithTrackAngle'),
+      useCluster               = cms.untracked.bool(False)
 )
 
 #process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
