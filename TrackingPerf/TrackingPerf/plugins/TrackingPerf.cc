@@ -1,22 +1,3 @@
-// -*- C++ -*-
-//
-// Package:    TrackingStudies/TrackingPerf
-// Class:      TrackingPerf
-//
-/**\class TrackingPerf TrackingPerf.cc TrackingStudies/TrackingPerf/plugins/TrackingPerf.cc
-
- Description: [one line class summary]
-
- Implementation:
-     [Notes on implementation]
-*/
-//
-// Original Author:  Jeremy Andrea
-//         Created:  Thu, 14 Mar 2019 10:47:50 GMT
-//
-//
-
-
 // system include files
 #include <memory>
 
@@ -54,6 +35,9 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
 #include "DataFormats/TrackingRecHit/interface/InvalidTrackingRecHit.h"
+
+
+#include "DataFormats/METReco/interface/CaloMETCollection.h"
 
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
@@ -140,7 +124,6 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
-//#include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/BTauReco/interface/CATopJetTagInfo.h"
 
@@ -152,6 +135,7 @@
 // the template argument to the base class so the class inherits
 // from  edm::one::EDAnalyzer<>
 // This will improve performance in multithreaded jobs.
+
 
 
 using reco::TrackCollection;
@@ -179,6 +163,11 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   void clearVariables();
   edm::InputTag tkTraj_;
 
+
+
+  //// GETTOKENDECLARATIONS 
+
+
   //track ( and event ) information 
   const edm::EDGetTokenT<edm::View<reco::Track> > trackToken_;
   const edm::EDGetTokenT<edm::View<reco::Track> > trackSrc_;
@@ -186,14 +175,14 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   const edm::EDGetTokenT<TrajTrackAssociationCollection> trajTrackAssociationSrc_;
   const edm::EDGetTokenT<reco::TrackToTrackingParticleAssociator> trackAssociatorToken_;
   const edm::EDGetTokenT<std::vector<PileupSummaryInfo> > puInfoToken_;
+
   const edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_;
   const edm::EDGetTokenT<reco::VertexCollection> vertexToken_;
 
+  edm::EDGetTokenT<TrackingParticleCollection> trackingParticleToken_;
+  edm::EDGetTokenT<TrackingParticleRefVector> trackingParticleRefToken_;
 
-
-  
-
-  //added information   
+ 
   //jet information 
   const edm::EDGetTokenT<edm::View<reco::Jet> > jetToken_;
   //const edm::EDGetTokenT<edm::View<pat::Jet> > viewJetToken_;
@@ -203,10 +192,11 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   //const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
 
   //met information 
-  const edm::EDGetTokenT<std::vector<pat::MET> > metTokenAOD_;
-  const edm::EDGetTokenT<pat::METCollection> metTokenPuppi_;
-  const edm::EDGetTokenT<pat::METCollection> metTokenNoHF_;
-  const edm::EDGetTokenT<pat::METCollection> metTokenMINIAOD_;
+  //const edm::EDGetTokenT<std::vector<pat::MET> > metTokenAOD_;
+  //const edm::EDGetTokenT<pat::METCollection> metTokenPuppi_;
+  //const edm::EDGetTokenT<pat::METCollection> metTokenNoHF_;
+  //const edm::EDGetTokenT<pat::METCollection> metTokenMINIAOD_;
+  const edm::EDGetTokenT<reco::CaloMETCollection> metToken_;
   
 
 
@@ -220,7 +210,7 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   //pat information
   const edm::EDGetTokenT<pat::PackedCandidateCollection> pfcandsToken_;
 
-    std::string parametersDefinerName_;
+  std::string parametersDefinerName_;
 
 
   //electrons
@@ -232,20 +222,21 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 
 
-
+  //additional 
   bool useCluster_;
   TTree *smalltree;
-  
+
+
   edm::Service<TFileService> fs;
 
- 
   std::string ttrhbuilder_; 
-  
+
   edm::ESHandle<MagneticField> bField;
-  
-  edm::EDGetTokenT<TrackingParticleCollection> trackingParticleToken_;
-  edm::EDGetTokenT<TrackingParticleRefVector> trackingParticleRefToken_;
-  
+
+
+
+
+  /////// VARIABLES FOR FILLING THE TREE 
   //-----------------------
   //fill the tree per track
   //std::vector<int> tree_track_nclusters;
@@ -452,10 +443,16 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
  std::vector<float> tree_jet_vz;
 
 
+ //--------------------------------
+ // met infos ------- 
+ //--------------------------------
 
 
+  
 
-   // Gen information 
+  //--------------------------------
+ // gen infos ------- 
+ //-------------------------------- 
 
   std::vector< double > tree_genParticle_charge;
   std::vector< double > tree_genParticle_pt;
@@ -471,7 +468,9 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 
 
-   // GenJet information 
+ //--------------------------------
+ // gen jet infos ------- 
+ //--------------------------------
 
 
   std::vector<float> tree_genJet_pt;
@@ -485,9 +484,54 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<float> tree_genJet_status; 
   std::vector<float> tree_genJet_pdgId; 
 
+
+ //--------------------------------
+ // gen event info ------- 
+ //--------------------------------
+
+
+ //--------------------------------
+ // lhe event infos ------- 
+ //--------------------------------
+
+ //--------------------------------
+ // PF infos ------- 
+ //--------------------------------
+
+
+ //--------------------------------
+ // electrons infos ------- 
+ //--------------------------------
+
+
+  std::vector<float> tree_electron_pt;
+  std::vector<float> tree_electron_eta;
+  std::vector<float> tree_electron_phi;
+  std::vector<float> tree_electron_vx;
+  std::vector<float> tree_electron_vy;
+  std::vector<float> tree_electron_vz;
+  std::vector<float> tree_electron_energy; 
+
+
+
+
+ //--------------------------------
+ // muons infos ------- 
+ //--------------------------------
+
+  std::vector<float> tree_muon_pt;
+  std::vector<float> tree_muon_eta;
+  std::vector<float> tree_muon_phi;
+  std::vector<float> tree_muon_vx;
+  std::vector<float> tree_muon_vy;
+  std::vector<float> tree_muon_vz;
+  std::vector<float> tree_muon_energy;
+
   
   
 };
+
+
 
 //
 // constants, enums and typedefs
@@ -507,19 +551,21 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
 	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getUntrackedParameter<edm::InputTag>("beamSpot"))),
   vertexToken_(consumes<reco::VertexCollection>(iConfig.getUntrackedParameter<edm::InputTag>("vertices"))),
 	jetToken_(consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("jetInput"))),
+  //metToken_(consumes<reco::CaloMETCollection> (iConfig.getParameter<edm::InputTag>("metInput"))),
   genParticlesToken_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
   genJetToken_(consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJetInput"))),
   genEventInfoToken_(consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genEventInfoInput"))),
   LHEEventProductToken_(consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("LHEEventProductInput"))),
-  //parametersDefinerName_(iConfig.getUntrackedParameter<std::string>("parametersDefiner")),
   pfcandsToken_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("pfcands"))),
   parametersDefinerName_(iConfig.getUntrackedParameter<std::string>("parametersDefiner")),
-  muonToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonInput")))
-  //useCluster_(iConfig.getUntrackedParameter<bool>("useCluster"))
+  //electronPATToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronPATInput"))),
+  //electronToken_(consumes<edm::View<reco::GsfElectron> >(iConfig.getParameter<edm::InputTag>("electronInput"))),
+  muonToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonInput"))),
+  useCluster_(iConfig.getUntrackedParameter<bool>("useCluster"))
 {
-  
- //  
-   usesResource("TFileService");
+
+
+    usesResource("TFileService");
    
    //trackSrc_ = consumes<reco::TrackCollection>(src_);
    ttrhbuilder_ = iConfig.getParameter<std::string>("TTRHBuilder");
@@ -743,24 +789,36 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
 
 
 
-  
-   
-   
+    //electrons info 
+   smalltree->Branch("tree_electron_pt"  , &tree_electron_pt);
+   smalltree->Branch("tree_electron_eta" , &tree_electron_eta);
+   smalltree->Branch("tree_electron_phi" , &tree_electron_phi);
+   smalltree->Branch("tree_electron_vx"  , &tree_electron_vx);
+   smalltree->Branch("tree_electron_vy" , &tree_electron_vy);
+   smalltree->Branch("tree_electron_vz" , &tree_electron_vz); 
+   smalltree->Branch("tree_electron_energy", &tree_electron_energy); 
 
 
-  
+
+    //muons info 
+   smalltree->Branch("tree_muon_pt"  , &tree_muon_pt);
+   smalltree->Branch("tree_muon_eta" , &tree_muon_eta);
+   smalltree->Branch("tree_muon_phi" , &tree_muon_phi);
+   smalltree->Branch("tree_muon_vx"  , &tree_muon_vx);
+   smalltree->Branch("tree_muon_vy" , &tree_muon_vy);
+   smalltree->Branch("tree_muon_vz" , &tree_muon_vz); 
+   smalltree->Branch("tree_muon_energy", &tree_muon_energy);
+
+
+
    runNumber = 0;
    eventNumber = 0;
    lumiBlock = 0;
    tree_bs_PosX= 0;
    tree_bs_PosY= 0;
    tree_bs_PosZ= 0;
-   
-   
-   
-   //trackingParticleToken_ = consumes<TrackingParticleCollection>(iConfig.getUntrackedParameter<edm::InputTag>("trackingParticles"));
-   //trackingParticleRefToken_ = consumes<TrackingParticleRefVector>(iConfig.getUntrackedParameter<edm::InputTag>("trackingParticles")); 
-   
+
+
    const bool tpRef = iConfig.getUntrackedParameter<bool>("trackingParticlesRef");
    const auto tpTag = iConfig.getUntrackedParameter<edm::InputTag>("trackingParticles");
    if(tpRef) {
@@ -772,6 +830,7 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
    
    
 }
+
 
 
 TrackingPerf::~TrackingPerf()
@@ -802,17 +861,29 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace edm;
    using namespace reco;
    using namespace std;
- 
-   
- 
+
+
+
    runNumber = iEvent.id().run();
    std::cout << "runNumber = " << runNumber << std::endl;
    eventNumber = iEvent.id().event();
+   std::cout << "eventNumber = "<< eventNumber <<std::endl; 
    lumiBlock = iEvent.luminosityBlock();
   
-   //edm::Handle<std::vector<reco::Track> > TracksForRes;
+
+
+
+    //// HANDLES /////
+
+
+    // do we really need both here ???
    edm::Handle<  edm::View<reco::Track>  > TracksForRes;
    iEvent.getByToken(trackSrc_, TracksForRes);
+
+   edm::Handle<edm::View<reco::Track> > tracksHandle;
+   iEvent.getByToken(trackToken_, tracksHandle);
+   const edm::View<reco::Track>& tracks = *tracksHandle;
+
    
    /*edm::ESHandle<TrackerGeometry> TG;
    iSetup.get<TrackerDigiGeometryRecord>().get(TG);
@@ -824,91 +895,66 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
    iSetup.get<TransientRecHitRecord>().get(ttrhbuilder_,theTrackerRecHitBuilder);
 
+   Handle<reco::BeamSpot> recoBeamSpotHandle;
+   iEvent.getByToken(beamSpotToken_, recoBeamSpotHandle);
+
+
+   edm::Handle<reco::VertexCollection> vertices;
+   iEvent.getByToken(vertexToken_, vertices);
+
+   edm::Handle<edm::View<reco::Jet> > jets;
+   iEvent.getByToken(jetToken_,jets); 
+
+   //edm::EDGetTokenT<std::vector<pat::MET> > metToken_;
+   //iEvent.getByToken(metToken_, met);
+
+    //not sure??
+    //edm::Handle<edm::View<pat::Jet> > view_jets;
+   //iEvent.getByToken(viewJetToken_,view_jets); 
 
    edm::Handle<reco::GenParticleCollection> genParticles;
    iEvent.getByToken(genParticlesToken_,genParticles);
 
+   edm::Handle<reco::GenJetCollection> genJets;
+   iEvent.getByToken(genJetToken_,genJets);
+
    edm::Handle<GenEventInfoProduct> genEventInfo;
    iEvent.getByToken(genEventInfoToken_,genEventInfo);
 
-
-   edm::Handle<reco::GenJetCollection> genJets;
-   iEvent.getByToken(genJetToken_,genJets);
+   edm::Handle<LHEEventProduct> lheEventProduct;
+   iEvent.getByToken(LHEEventProductToken_,lheEventProduct);
 
    edm::Handle<pat::PackedCandidateCollection> pfcands;
    iEvent.getByToken(pfcandsToken_,pfcands);
 
-   //edm::Handle<edm::View<pat::Jet> > view_jets;
-   //iEvent.getByToken(viewJetToken_,view_jets);
+   //edm::Handle<edm::View<reco::GsfElectron> > electrons;
+   //iEvent.getByToken(electronToken_, electrons);
+
+    //edm::Handle<pat::ElectronCollection> electronsPAT;
+    //iEvent.getByToken(electronPATToken_,electronsPAT);
 
    edm::Handle<pat::MuonCollection> muons;
    iEvent.getByToken(muonToken_,muons);
 
-  //edm::Handle<edm::View<reco::GsfElectron> > electrons;
-  //iEvent.getByToken(electronToken_,electrons);
-
-  //edm::Handle<pat::ElectronCollection> electronsPAT;
-  //iEvent.getByToken(electronPATToken_,electronsPAT);
-
-
-
-
-
-
-
-   
-   
- 
-   
-   
-   //get tracker geometry
+   //geometry & magnetif field 
    edm::ESHandle<TrackerGeometry> pDD;
    iSetup.get<TrackerDigiGeometryRecord>().get(pDD);
-   
-   
-   //edm::Handle<std::vector<Trajectory> > TrajectoryCollection;
-   //iEvent.getByToken(trajSrc_, TrajectoryCollection);
-   //edm::Handle<TrajTrackAssociationCollection> trajTrackAssociationHandle;
-   //iEvent.getByToken(trajTrackAssociationSrc_, trajTrackAssociationHandle);
-   
-   
-   //edm::ESHandle<StripClusterParameterEstimator> parameterestimator;
-   //iSetup.get<TkStripCPERecord>().get("StripCPEfromTrackAngle", parameterestimator); 
-   //const StripClusterParameterEstimator &stripcpe(*parameterestimator);
-   
-   //edm::ESHandle<PixelClusterParameterEstimator> pixel_parameterestimator;
-   //iSetup.get<TkPixelCPERecord>().get("PixelCPEfromTrackAngle", pixel_parameterestimator); 
-   //const PixelClusterParameterEstimator &pixelcpe(*pixel_parameterestimator);
-   
-   
-   
+
    iSetup.get<IdealMagneticFieldRecord>().get(bField); 
  
    edm::ESHandle<TrackerTopology> tTopoHandle;
    iSetup.get<TrackerTopologyRcd>().get(tTopoHandle);
    const TrackerTopology* const tTopo = tTopoHandle.product();
- 
-   //beamspot
-   Handle<reco::BeamSpot> recoBeamSpotHandle;
-   iEvent.getByToken(beamSpotToken_, recoBeamSpotHandle);
-   BeamSpot const & bs = *recoBeamSpotHandle;
-   
-   tree_bs_PosX = bs.x0();
-   tree_bs_PosY = bs.y0();
-   tree_bs_PosZ = bs.z0();
-   
-   
-   //Track hit association
-   
+
+
+   //association between tracks 
    edm::Handle<reco::TrackToTrackingParticleAssociator> theAssociator;
    iEvent.getByToken(trackAssociatorToken_, theAssociator);
    const reco::TrackToTrackingParticleAssociator& associatorByHits = *theAssociator;
- 
-   
-   
-   // FIXME: we really need to move to edm::View for reading the
-   // TrackingParticles... Unfortunately it has non-trivial
-   // consequences on the associator/association interfaces etc.
+
+
+   //tracking Particles info and matching to reco 
+
    TrackingParticleRefVector tmpTP;
    const TrackingParticleRefVector *tmpTPptr = nullptr;
    edm::Handle<TrackingParticleCollection>  TPCollectionH;
@@ -938,43 +984,57 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::ESHandle<ParametersDefinerForTP> parametersDefinerH;
    iSetup.get<TrackAssociatorRecord>().get(parametersDefinerName_, parametersDefinerH);
    const ParametersDefinerForTP *parametersDefiner = parametersDefinerH.product();
-   
-   
-   
-   /////////////////////////////////
-   //////////////////////////////////
-   ////////   tracks ////////////////
-   //////////////////////////////////
-   //////////////////////////////////
-   
-   
-   
-   //get track collection and do reference for trackingpaticle matching
-   
-   edm::Handle<edm::View<reco::Track> > tracksHandle;
-   iEvent.getByToken(trackToken_, tracksHandle);
-   const edm::View<reco::Track>& tracks = *tracksHandle;
-   // The associator interfaces really need to be fixed...
-   
-   
-   edm::Handle<reco::VertexCollection> vertices;
-   iEvent.getByToken(vertexToken_, vertices);
-   
-    // Jets
-   //edm::Handle<pat::JetCollection> jets;
-   //iEvent.getByToken(jetToken_,jets);
-   edm::Handle<edm::View<reco::Jet> > jets;
-   iEvent.getByToken(jetToken_,jets);   
 
- 
+
+
+
+    /// Some output numbers 
+
+   //int nElectrons = 0; 
+   //int nMuons = 0; 
+
+   //// START FILLING THE INFORMATION FOR THE OBJECT 
+
+
+
+
+   //////////////////////////////////
+   //////////////////////////////////
+   ////////      BS     /////////////
+   //////////////////////////////////
+   //////////////////////////////////
+
+   BeamSpot const & bs = *recoBeamSpotHandle;
+
+   tree_bs_PosX = bs.x0();
+   tree_bs_PosY = bs.y0();
+   tree_bs_PosZ = bs.z0();
+
+
+
+
+   //////////////////////////////////
+   //////////////////////////////////
+   ////////   Tracks  /////////////
+   //////////////////////////////////
+   //////////////////////////////////
+   ///Tracks and their association to other objects 
+
    edm::RefToBaseVector<reco::Track> trackRefs;
    size_t idxTrack = 0;
-   
-   
+
+
+
    std::map<size_t , int > trackToVextexMap;
    std::map<size_t , int > trackToJetMap;
    std::map<size_t , int > jetToTrackMap;
-   for(edm::View<Track>::size_type i=0; i<tracks.size(); ++i) {
+
+   ///// TRACK ASSOCIATION TO VERTICES AND JETS 
+
+
+   int nRecoTracks = tracks.size(); 
+   for(edm::View<Track>::size_type i=0; i<tracks.size(); ++i) 
+   {
      //---------------------------
      //minimum selection on tracks
      if(tracks[i].pt() < 1 || fabs(tracks[i].eta()) > 2.4) continue;
@@ -998,52 +1058,50 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        //---------------------------
        idxvtx++;
      }
-     //std::cout << thematchidx << std::endl;
+
      trackToVextexMap[idxTrack] = thematchidx;
-     
-     
+
+
+
+
+
      //---------------------------
      //loop on jets to do track-jet association
      //---------------------------
+ 
      int idxJet=0;
-     bool found_match = false;
-     for(unsigned int ij=0;ij<jets->size();ij++){
-   
-       const Jet& jet = jets->at(ij);
-       TLorentzVector jet4m, track4m;
-       jet4m.SetPtEtaPhiM(jet.pt(), jet.eta(), jet.phi(), 0);
-       track4m.SetPtEtaPhiM(tracks[i].pt(), tracks[i].eta(), tracks[i].phi(), 0);
-       if( jet4m.DeltaR(track4m) < 0.4){
-         found_match = true;
-         break;
-       }
-       else idxJet++;
-     }
-     if(found_match) trackToJetMap[idxTrack] = idxJet;
-     else trackToJetMap[idxTrack] = -1;
-     //---------------------------
-     //     
-     idxTrack++; 
-     
+      bool found_match = false;
+      for(unsigned int ij=0;ij<jets->size();ij++){
     
-   }
-   
-   //////////////////////////////////
-   //////////////////////////////////
-   ////////   GSFTracks /////////////
-   //////////////////////////////////
-   //////////////////////////////////
-   
-   
-   
+        const Jet& jet = jets->at(ij);
+        TLorentzVector jet4m, track4m;
+        jet4m.SetPtEtaPhiM(jet.pt(), jet.eta(), jet.phi(), 0);
+        track4m.SetPtEtaPhiM(tracks[i].pt(), tracks[i].eta(), tracks[i].phi(), 0);
+        if( jet4m.DeltaR(track4m) < 0.4){
+          found_match = true;
+          break;
+        }
+        else idxJet++;
+      }
+      if(found_match) trackToJetMap[idxTrack] = idxJet;
+      else trackToJetMap[idxTrack] = -1;
+      //---------------------------
+      //     
+      idxTrack++;
+ 
+
+    } 
+
+
+
    //////////////////////////////////
    //////////////////////////////////
    ////////   vertices  /////////////
    //////////////////////////////////
    //////////////////////////////////
-   
-   
-   
+
+
+   int nPV = vertices->size(); 
    for(auto const & vertex : *vertices) {
      
      
@@ -1054,11 +1112,13 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_vtx_PosXError.push_back(vertex.xError());
      tree_vtx_PosYError.push_back(vertex.yError());
      tree_vtx_PosZError.push_back(vertex.zError());
+
+     nPV++; 
      
      
    }
-   
-   
+
+
    //////////////////////////////////
    //////////////////////////////////
    ////////   jets ///  /////////////
@@ -1066,7 +1126,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //////////////////////////////////
    
    int nJet = jets->size();
-   cout << "number of jets "<<nJet<<endl;  
+   //cout << "number of jets "<<nJet<<endl;  
    
    for(int ij=0;ij<nJet;ij++){
    
@@ -1079,67 +1139,136 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_jet_vz.push_back(jet.vz());
    }
 
+
    //////////////////////////////////
+   //////////////////////////////////
+   ////////   MET   /////////////////
+   //////////////////////////////////
+   //////////////////////////////////
+
+
+
+    //////////////////////////////////
    //////////////////////////////////
    //////// gen Information /////////
    //////////////////////////////////
    //////////////////////////////////
 
-  ////genParticles 
 
-  int nGenParticles = genParticles->size(); 
-  cout << "number of gen particles "<<nGenParticles<<endl; 
+   ///GEN PARTICLES 
 
-  for (auto const & genParticle : *genParticles)
-  {
-    tree_genParticle_pt.push_back(genParticle.pt());
-    tree_genParticle_eta.push_back(genParticle.eta());
-    tree_genParticle_phi.push_back(genParticle.phi());
-    tree_genParticle_charge.push_back(genParticle.charge());
-    tree_genParticle_pdgId.push_back(genParticle.pdgId());
-    tree_genParticle_vx.push_back(genParticle.vx());
-    tree_genParticle_vy.push_back(genParticle.vy());
-    tree_genParticle_vz.push_back(genParticle.vz());
 
-    //const Candidate * mom = genParticle.mother();
-
-    tree_genParticle_mass.push_back(genParticle.mass());
-    tree_genParticle_statusCode.push_back(genParticle.status()); 
-    //tree_genParticle_mother.push_back(mom); 
-  
-  }
-
-   //////////////////////////////////
-   //////////////////////////////////
-   ////////   gen Jet information ///
-   //////////////////////////////////
-   //////////////////////////////////
-
-   int nGenJets = genJets->size();
-   cout << "number of gen Jets "<<nGenJets<<endl; 
-
-   for (auto const & genJet : *genJets)
+   int nGenParticles = genParticles->size(); 
+   //cout << "number of gen particles "<<nGenParticles<<endl; 
+ 
+   for (auto const & genParticle : *genParticles)
    {
-     tree_genJet_pt.push_back(genJet.pt());
-     tree_genJet_eta.push_back(genJet.eta());
-     tree_genJet_phi.push_back(genJet.phi());
-     tree_genJet_mass.push_back(genJet.mass());
-     tree_genJet_energy.push_back(genJet.energy());
-     tree_genJet_status.push_back(genJet.status());
-     tree_genJet_pdgId.push_back(genJet.pdgId());
-   }
+     tree_genParticle_pt.push_back(genParticle.pt());
+     tree_genParticle_eta.push_back(genParticle.eta());
+     tree_genParticle_phi.push_back(genParticle.phi());
+     tree_genParticle_charge.push_back(genParticle.charge());
+     tree_genParticle_pdgId.push_back(genParticle.pdgId());
+     tree_genParticle_vx.push_back(genParticle.vx());
+     tree_genParticle_vy.push_back(genParticle.vy());
+     tree_genParticle_vz.push_back(genParticle.vz());
+     
+ 
+     tree_genParticle_mass.push_back(genParticle.mass());
+     tree_genParticle_statusCode.push_back(genParticle.status()); 
 
-
+     ///FIX ME : maybe add the pdg id of mother 
+     //const Candidate * mom = genParticle.mother();
+     //tree_genParticle_mother.push_back(mom); 
    
-   //prepare assocoaio to tracks by hit
+    }
+
+
+
+    ///GEN JETS 
+
+    int nGenJets = genJets->size();
+    //cout << "number of gen Jets "<<nGenJets<<endl; 
+ 
+    for (auto const & genJet : *genJets)
+    {
+      tree_genJet_pt.push_back(genJet.pt());
+      tree_genJet_eta.push_back(genJet.eta());
+      tree_genJet_phi.push_back(genJet.phi());
+      tree_genJet_mass.push_back(genJet.mass());
+      tree_genJet_energy.push_back(genJet.energy());
+      tree_genJet_status.push_back(genJet.status());
+      tree_genJet_pdgId.push_back(genJet.pdgId());
+    }
+
+
+    /// Electrons 
+
+  /*  int nElectrons = electrons->size();
+
+
+    for (auto const & electron : *electrons)
+    {
+      tree_electron_pt.push_back(electron.pt());
+      tree_electron_eta.push_back(electron.eta());
+      tree_electron_phi.push_back(electron.phi());
+      tree_electron_vx.push_back(electron.vx());
+      tree_electron_vy.push_back(electron.vy());
+      tree_electron_vz.push_back(electron.vz());
+      tree_electron_energy.push_back(electron.energy());
+    }*/
+
+
+    /// Muons 
+    int nMuons = muons->size();
+
+
+    for (auto const & muon : *muons)
+    {
+      tree_muon_pt.push_back(muon.pt());
+      tree_muon_eta.push_back(muon.eta());
+      tree_muon_phi.push_back(muon.phi());
+      tree_muon_vx.push_back(muon.vx());
+      tree_muon_vy.push_back(muon.vy());
+      tree_muon_vz.push_back(muon.vz());
+      tree_muon_energy.push_back(muon.energy());
+    }
+
+
+
+
+    ///OUTPUT MESSAGES 
+
+    std::cout << "---------------------------"  << std::endl;
+    std::cout << "number of reco tracks      "  << nRecoTracks <<std::endl;
+    std::cout << "number of primary vertices "  << nPV <<std::endl;
+    std::cout << "number of jets             "  << nJet <<std::endl;
+    std::cout << "number of gen particles    "  << nGenParticles <<std::endl;
+    std::cout << "number of gen jets         "  << nGenJets <<std::endl;
+    //std::cout << "number of electrons        "  << nElectrons <<std::endl; 
+    std::cout << "number of muons            "  << nMuons <<std::endl; 
+
+
+
+
+
+
+    /////////////////
+    //prepare assocoaio to tracks by hit
    reco::RecoToSimCollection recSimColl = associatorByHits.associateRecoToSim(trackRefs, tpCollection);
    
+
+   int nTracks = 0; 
    int nUnmatchTrack_fromPU = 0;
    int nUnmatchTrack_fromPV = 0;
    int nUnmatchTrack= 0;
    int nPUTrack= 0;
+
    
    
+
+
+
+
    //---------------
    //loops on tracks 
    //---------------
@@ -1147,7 +1276,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    int idx_sicluster_first  = 0;
    int idx_pixcluster_first = 0;
    
-   for(size_t iTrack = 0; iTrack<trackRefs.size(); ++iTrack) {
+   for(size_t iTrack = 0; iTrack<trackRefs.size(); ++iTrack) 
+    {
      
    
      const auto& itTrack = trackRefs[iTrack];
@@ -1169,19 +1299,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_track_firsthit_Y.push_back(itTrack->innerPosition().Y()); 
      tree_track_firsthit_Z.push_back(itTrack->innerPosition().Z()); 
      tree_track_firsthit_phi.push_back(itTrack->innerPosition().phi()); 
-     
-     
-     /*if( itTrack->quality(reco::TrackBase::undefQuality)	) tree_track_Quality.push_back(1);
-     if( itTrack->quality(reco::TrackBase::loose)		) tree_track_Quality.push_back(2);
-     if( itTrack->quality(reco::TrackBase::tight)		) tree_track_Quality.push_back(3);
-     if( itTrack->quality(reco::TrackBase::highPurity)  	) tree_track_Quality.push_back(4);
-     if( itTrack->quality(reco::TrackBase::confirmed)		) tree_track_Quality.push_back(5);
-     if( itTrack->quality(reco::TrackBase::goodIterative)	) tree_track_Quality.push_back(6);
-     if( itTrack->quality(reco::TrackBase::looseSetWithPV)	) tree_track_Quality.push_back(7);
-     if( itTrack->quality(reco::TrackBase::highPuritySetWithPV) ) tree_track_Quality.push_back(8);
-     if( itTrack->quality(reco::TrackBase::discarded)		) tree_track_Quality.push_back(9);
-     if( itTrack->quality(reco::TrackBase::qualitySize) 	) tree_track_Quality.push_back(10);*/
-     
+
+
      if( itTrack->quality(reco::TrackBase::highPurity) ){tree_track_isHighQuality.push_back(true);} 
      	else {tree_track_isHighQuality.push_back(false);}
      if( itTrack->quality(reco::TrackBase::loose) )     {tree_track_isLoose.push_back(true);}	
@@ -1202,7 +1321,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_track_originalAlgo.push_back(itTrack->originalAlgo());
      tree_track_algo.push_back(itTrack->algo());
      tree_track_stopReason.push_back(itTrack->stopReason());
-     
+
+
      //--------------------------------
      //general hit properties of tracks
      //--------------------------------
@@ -1239,7 +1359,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      
      
      tree_track_hasValidHitInPixelLayer.push_back(hitPixelLayer);
-   
+
      //----------------------------
      //matching to simulated tracks
      //----------------------------
@@ -1270,51 +1390,53 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      
      
      auto foundTPs = recSimColl.find(itTrack);
-     if (foundTPs != recSimColl.end()) {
-       //if (!foundTPs->val.empty()) {
-      isSimMatched = true;
-      TrackingParticleRef tpr = foundTPs->val[0].first;
-      
-      nSimHits = tpr->numberOfTrackerHits();
-      
-      //determiine x,y,z position of the genVertex which produced the associated simtrack
-	 simtrack_charge	      = tpr->charge();  	  
-	 simtrack_pt		      = tpr->pt();		  
-	 simtrack_eta		      = tpr->eta();	  
-	 simtrack_phi		      = tpr->phi();	  
-	 simtrack_longLived	      = tpr->longLived();   
-	 //simtrack_matchedHit	      = tpr->matchedHit();    
-	 simtrack_pdgId 		      = tpr->pdgId();	 
-	 simtrack_numberOfTrackerHits	      = tpr->numberOfTrackerHits(); 
-	 simtrack_numberOfTrackerLayers       = tpr->numberOfTrackerLayers();
-	 simtrack_mass  		      = tpr->mass();
-	 simtrack_status		      = tpr->status();
-      
-	 genVertexPos_X 		 = tpr->vx();
-	 genVertexPos_Y 		 = tpr->vy();
-	 genVertexPos_Z 		 = tpr->vz();
-     
-      
-       //}
-     }
-     
-     
-     
+     if (foundTPs != recSimColl.end()) 
+     {
+         //if (!foundTPs->val.empty()) {
+        isSimMatched = true;
+        TrackingParticleRef tpr = foundTPs->val[0].first;
+        
+        nSimHits = tpr->numberOfTrackerHits();
+         
+   
+	    simtrack_charge	      = tpr->charge();  	  
+	    simtrack_pt		      = tpr->pt();		  
+	    simtrack_eta		      = tpr->eta();	  
+	    simtrack_phi		      = tpr->phi();	  
+	    simtrack_longLived	      = tpr->longLived();   
+	    //simtrack_matchedHit	      = tpr->matchedHit();    
+	    simtrack_pdgId 		      = tpr->pdgId();	 
+	    simtrack_numberOfTrackerHits	      = tpr->numberOfTrackerHits(); 
+	    simtrack_numberOfTrackerLayers       = tpr->numberOfTrackerLayers();
+	    simtrack_mass  		      = tpr->mass();
+	    simtrack_status		      = tpr->status();
+         
+   
+        //determiine x,y,z position of the genVertex which produced the associated simtrack
+	    genVertexPos_X 		 = tpr->vx();
+	    genVertexPos_Y 		 = tpr->vy();
+	    genVertexPos_Z 		 = tpr->vz();
+
+
+
+     }  
+
+
      tree_track_nSimHits		      .push_back(nSimHits); 
      tree_track_isSimMatched		      .push_back(isSimMatched);
-     /*if( !isSimMatched &&  trackToVextexMap[iTrack] != 0 && itTrack->quality(reco::TrackBase::highPurity)){
-       std::cout << "  ------------found a non-PU track  not associated to sim track " << std::endl;
-       std::cout << "  nbre of hits  "      << itTrack->numberOfValidHits() << std::endl;
-       std::cout << "  track quality "      << itTrack->quality(reco::TrackBase::highPurity)  << std::endl;
-       std::cout << "  track pt, eta, phi " << itTrack->pt() << " " << itTrack->eta()<< " " <<itTrack->phi()  << std::endl;
-       std::cout << "  track nchi2 "        << itTrack->normalizedChi2()   << std::endl;
-     }*/
-     if(itTrack->pt() < 1 ) std::cout << " tehre is a pt problem " << itTrack->pt() << std::endl;
+     
+
+     nTracks++; 
+
+     if( itTrack->pt() < 1 ) std::cout << " there is a pt problem " << itTrack->pt() << std::endl;
      if( !isSimMatched &&  trackToVextexMap[iTrack] != 0 ) nUnmatchTrack_fromPU++;
      if( !isSimMatched &&  trackToVextexMap[iTrack] == 0 ) nUnmatchTrack_fromPV++;
      if( !isSimMatched                                   ) nUnmatchTrack++;
      if( trackToVextexMap[iTrack] != 0                   ) nPUTrack++;
-     
+
+
+
+
      tree_track_recoVertex_idx.push_back(trackToVextexMap[iTrack]);
      tree_track_recoJet_idx.push_back(trackToJetMap[iTrack]);
      
@@ -1332,12 +1454,9 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      
      tree_track_genVertexPos_X  	      .push_back(genVertexPos_X);	     
      tree_track_genVertexPos_Y  	      .push_back(genVertexPos_Y);	     
-     tree_track_genVertexPos_Z  	      .push_back(genVertexPos_Z);	     
-     
-     
-     
-     
-     
+     tree_track_genVertexPos_Z  	      .push_back(genVertexPos_Z);	
+
+
      //----------------------------
      //look a recHit and check info
      //----------------------------
@@ -1346,9 +1465,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_track_idxPixClusterFirst.  push_back(idx_pixcluster_first);
      
      
-     for(auto i=itTrack->recHitsBegin(); i!=itTrack->recHitsEnd(); i++) {
-       
-       
+     for(auto i=itTrack->recHitsBegin(); i!=itTrack->recHitsEnd(); i++) 
+     {
        
        TransientTrackingRecHit::RecHitPointer hit=(*theTrackerRecHitBuilder).build(&**i ); 
        
@@ -1368,167 +1486,148 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        const SiStripRecHit1D* SiStriphit1D = dynamic_cast<const SiStripRecHit1D*>((*hit).hit());
        
        
-       if(  SiStriphit2D!=0 || SiStriphit1D!=0 ){
-	 
-	 
-         
-	 //const TransientTrackingRecHit::ConstRecHitPointer theTTrechit = //(*itm).recHit();
-	 const SiStripCluster* si_cluster = 0;
-	 
-	 if (SiStriphit2D!=0){
-	   si_cluster = &*(SiStriphit2D->cluster());
-	 }
-	 if (SiStriphit1D!=0){
-	   si_cluster = &*(SiStriphit1D->cluster());
-	 }
-	 
-	 SiStripClusterInfo *clusterInfo = 0;
-	 if(useCluster_)  clusterInfo = new SiStripClusterInfo( *si_cluster, iSetup,  hitId ); 
-	 
-	 
-	 int Cluster_WheelSide = 0;
-	 int Cluster_detID = hitId;
-	 int Cluster_PetalSide = 0;
-	 int Cluster_subDet = -1;
-	 int Cluster_LayerNbr = -1;
-	 //determine subdte id
-	 if(subDet == SiStripDetId::TIB){
-	   Cluster_subDet = 0;
-	   Cluster_LayerNbr = tTopo->tobLayer(hitId.rawId());
-	 } 
-	 if(subDet == SiStripDetId::TOB){
-	   Cluster_subDet = 1;
-	   Cluster_LayerNbr =tTopo->tibLayer( hitId.rawId());
-	 } 
-	 if(subDet == SiStripDetId::TID){
-	   Cluster_subDet = 2;
-	   Cluster_WheelSide =tTopo->tidSide(hitId.rawId());
-	   Cluster_LayerNbr =tTopo->tidWheel(hitId.rawId());
-	 } 
-	 if(subDet == SiStripDetId::TEC){
-	   Cluster_subDet = 3; 
-	   Cluster_WheelSide = tTopo->tecSide(hitId.rawId());
-	   Cluster_LayerNbr =tTopo->tecWheel( hitId.rawId());
-	   if(tTopo->tecIsFrontPetal(	   hitId.rawId()))  Cluster_PetalSide =  1;
-	   else						    Cluster_PetalSide = -1;
+       if(  SiStriphit2D!=0 || SiStriphit1D!=0 )
+       {  
+           //const TransientTrackingRecHit::ConstRecHitPointer theTTrechit = //(*itm).recHit();
+	        const SiStripCluster* si_cluster = 0;
+    
+	        if (SiStriphit2D!=0){
+	          si_cluster = &*(SiStriphit2D->cluster());
+	        }
+	        if (SiStriphit1D!=0){
+	          si_cluster = &*(SiStriphit1D->cluster());
+	        }
+    
+	        SiStripClusterInfo *clusterInfo = 0;
+	        if(useCluster_)  clusterInfo = new SiStripClusterInfo( *si_cluster, iSetup,  hitId ); 
+    
+    
+	        int Cluster_WheelSide = 0;
+	        int Cluster_detID = hitId;
+	        int Cluster_PetalSide = 0;
+	        int Cluster_subDet = -1;
+	        int Cluster_LayerNbr = -1;
+	        //determine subdte id
+	        if(subDet == SiStripDetId::TIB){
+	          Cluster_subDet = 0;
+	          Cluster_LayerNbr = tTopo->tobLayer(hitId.rawId());
+	        } 
+	        if(subDet == SiStripDetId::TOB){
+	          Cluster_subDet = 1;
+	          Cluster_LayerNbr =tTopo->tibLayer( hitId.rawId());
+	        } 
+	        if(subDet == SiStripDetId::TID){
+	          Cluster_subDet = 2;
+	          Cluster_WheelSide =tTopo->tidSide(hitId.rawId());
+	          Cluster_LayerNbr =tTopo->tidWheel(hitId.rawId());
+	        } 
+	        if(subDet == SiStripDetId::TEC){
+	          Cluster_subDet = 3; 
+	          Cluster_WheelSide = tTopo->tecSide(hitId.rawId());
+	          Cluster_LayerNbr =tTopo->tecWheel( hitId.rawId());
+	          if(tTopo->tecIsFrontPetal(	   hitId.rawId()))  Cluster_PetalSide =  1;
+	          else						    Cluster_PetalSide = -1;
+    
+	        }
+
+
+            tree_SiCluster_WheelSide.push_back(Cluster_WheelSide);
+	        tree_SiCluster_detID.push_back(	 Cluster_detID);
+	        tree_SiCluster_PetalSide.push_back(Cluster_PetalSide);
+	        tree_SiCluster_subDet.push_back(   Cluster_subDet);
+	        tree_SiCluster_LayerNbr.push_back( Cluster_LayerNbr);
+
+
+            if(useCluster_){
+	        tree_SiCluster_SoverN  .push_back( (*clusterInfo).signalOverNoise());
+	        tree_SiCluster_noise	  .push_back( (*clusterInfo).noiseRescaledByGain());
+	        tree_SiCluster_charge  .push_back( (*clusterInfo).charge());
+	        tree_SiCluster_width	  .push_back( si_cluster->amplitudes().size());
+	        tree_SiCluster_barycenter   .push_back( si_cluster->barycenter());
+	        }
 	   
-	 }
+	        /*tree_SiCluster_globX .push_back( hit->globalPosition().x());
+	        tree_SiCluster_globY .push_back( hit->globalPosition().y());
+	        tree_SiCluster_globZ .push_back( hit->globalPosition().z());*/
+	 
+	        tree_SiCluster_globX .push_back( 0 );
+	        tree_SiCluster_globY .push_back( 0 );
+	        tree_SiCluster_globZ .push_back( 0 );
 	 
 	 
-	 tree_SiCluster_WheelSide.push_back(Cluster_WheelSide);
-	 tree_SiCluster_detID.push_back(	 Cluster_detID);
-	 tree_SiCluster_PetalSide.push_back(Cluster_PetalSide);
-	 tree_SiCluster_subDet.push_back(   Cluster_subDet);
-	 tree_SiCluster_LayerNbr.push_back( Cluster_LayerNbr);
+	        idx_sicluster_first++;
 	 
-	 
-	 
-	 if(useCluster_){
-	   tree_SiCluster_SoverN  .push_back( (*clusterInfo).signalOverNoise());
-	   tree_SiCluster_noise	  .push_back( (*clusterInfo).noiseRescaledByGain());
-	   tree_SiCluster_charge  .push_back( (*clusterInfo).charge());
-	   tree_SiCluster_width	  .push_back( si_cluster->amplitudes().size());
-	   tree_SiCluster_barycenter   .push_back( si_cluster->barycenter());
-	 }
+        } 
+
+
+        const SiPixelRecHit* pixelHits= dynamic_cast<const SiPixelRecHit*>((*hit).hit());
+        if(  pixelHits != 0  )  {
+            const SiPixelCluster* pix_cluster = 0;
+            if(pixelHits != 0){
+                if(useCluster_) pix_cluster = &*(pixelHits->cluster());
+	            DetId clusterDetId(hitId);
+                //	const PixelGeomDetUnit * pixeldet = (const PixelGeomDetUnit*) theTrackerGeometry->idToDetUnit(clusterDetId);
+	            int PixCluster_LayerNbr = -1;
+
+
+                if(subDet ==  PixelSubdetector::PixelBarrel){
+	             tree_PixCluster_isBPix.push_back(true);
+	             PXBDetId pdetId = PXBDetId(hitId);
+	             PixCluster_LayerNbr  = pdetId.layer(); 
+                }
+
+
+
+                if(subDet ==  PixelSubdetector::PixelEndcap){
+                 tree_PixCluster_isBPix.push_back(false);
+                 PXFDetId pdetId = PXFDetId(hitId);
+                 PixCluster_LayerNbr  = pdetId.disk(); 
+	            }
+
+
+
+                tree_PixCluster_LayerNbr.push_back(PixCluster_LayerNbr);  
 	   
-	 /*tree_SiCluster_globX .push_back( hit->globalPosition().x());
-	 tree_SiCluster_globY .push_back( hit->globalPosition().y());
-	 tree_SiCluster_globZ .push_back( hit->globalPosition().z());*/
-	 
-	 tree_SiCluster_globX .push_back( 0 );
-	 tree_SiCluster_globY .push_back( 0 );
-	 tree_SiCluster_globZ .push_back( 0 );
-	 
-	 
-	 idx_sicluster_first++;
-	 
-       } 
-       
-       
-       const SiPixelRecHit* pixelHits= dynamic_cast<const SiPixelRecHit*>((*hit).hit());
-       
-       
-       if(  pixelHits != 0  )  {
-	 
-       
-	 const SiPixelCluster* pix_cluster = 0;
-       
-	 if(pixelHits != 0){
-       
-	   if(useCluster_) pix_cluster = &*(pixelHits->cluster());
-	   
-       
-	   DetId clusterDetId(hitId);
-       
-	   //	const PixelGeomDetUnit * pixeldet = (const PixelGeomDetUnit*) theTrackerGeometry->idToDetUnit(clusterDetId);
-	   int PixCluster_LayerNbr = -1;
-	   
-       
-	   if(subDet ==  PixelSubdetector::PixelBarrel){
-	     tree_PixCluster_isBPix.push_back(true);
-	     PXBDetId pdetId = PXBDetId(hitId);
-	     PixCluster_LayerNbr  = pdetId.layer(); 
-	     
-	   }
-       
-	   if(subDet ==  PixelSubdetector::PixelEndcap){
-	     
-	     tree_PixCluster_isBPix.push_back(false);
-	     PXFDetId pdetId = PXFDetId(hitId);
-	     PixCluster_LayerNbr  = pdetId.disk(); 
-	     
-	   }
-       
-	   tree_PixCluster_LayerNbr.push_back(PixCluster_LayerNbr);  
-	   
-	   if(useCluster_) tree_PixCluster_charge.push_back(pix_cluster->charge());
-	   
-	   
-           
-	   //std::cout <<   pixelHits->globalPosition().x()<< std::endl ;
-	   
-	   tree_PixCluster_detID.push_back(hitId);
-	   /*tree_PixCluster_globX .push_back( pixelHits->globalPosition().x());
-	   tree_PixCluster_globY .push_back( pixelHits->globalPosition().y());
-	   tree_PixCluster_globZ .push_back( pixelHits->globalPosition().z());*/
-	   
-	   tree_PixCluster_globX .push_back( 0 );
-	   tree_PixCluster_globY .push_back( 0 );
-	   tree_PixCluster_globZ .push_back( 0 );
-	   
-	   
-           
-	   idx_pixcluster_first++;
-	 }
-       }
-       
-     }//end loops on rechits
-     
-     
-     
+	            if(useCluster_) tree_PixCluster_charge.push_back(pix_cluster->charge());
+
+
+	            //std::cout <<   pixelHits->globalPosition().x()<< std::endl ;
+
+	            tree_PixCluster_detID.push_back(hitId);
+	            /*tree_PixCluster_globX .push_back( pixelHits->globalPosition().x());
+	            tree_PixCluster_globY .push_back( pixelHits->globalPosition().y());
+	            tree_PixCluster_globZ .push_back( pixelHits->globalPosition().z());*/
+
+	            tree_PixCluster_globX .push_back( 0 );
+	            tree_PixCluster_globY .push_back( 0 );
+	            tree_PixCluster_globZ .push_back( 0 );
+
+
+
+	            idx_pixcluster_first++;
+	        }
+            
+        }
+
+     } //end loop on rechits  
+
      tree_track_idxSiClusterLast  .push_back(idx_sicluster_first);
      tree_track_idxPixClusterLast .push_back(idx_pixcluster_first);
-     
-     
-   }//end loop on tracks
 
-   
-   
-   std::cout << "----------------"      << std::endl;
-   std::cout << "nUnmatchTrack_fromPU " << nUnmatchTrack_fromPU << std::endl;
-   std::cout << "nUnmatchTrack_fromPV " << nUnmatchTrack_fromPV << std::endl;
-   std::cout << "nUnmatchTrack        " << nUnmatchTrack<< std::endl;
-   std::cout << "nTrack               " << tree_track_charge.size() << std::endl;
-   std::cout << "nPUTrack             " << nPUTrack<< std::endl;
-   std::cout << "nNonPUTrack          " << tree_track_charge.size()- nPUTrack<< std::endl;
-   
-    
-   
-   
-   
-   
-   
-   //------------------------------
+    }//end loop on tracks
+
+
+
+
+    std::cout << "---------------------"  << std::endl;
+    std::cout << "nUnmatchTrack_fromPU " << nUnmatchTrack_fromPU << std::endl;
+    std::cout << "nUnmatchTrack_fromPV " << nUnmatchTrack_fromPV << std::endl;
+    std::cout << "nUnmatchTrack        " << nUnmatchTrack<< std::endl;
+    std::cout << "nTrack               " << tree_track_charge.size() << std::endl;
+    std::cout << "nPUTrack             " << nPUTrack<< std::endl;
+    std::cout << "nNonPUTrack          " << tree_track_charge.size()- nPUTrack<< std::endl;
+
+    //------------------------------
    //loops on tracking particles 
    //------------------------------
    
@@ -1578,25 +1677,11 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      
      tree_simtrack_pca_dxy      .push_back(dxySim);
      tree_simtrack_pca_dz	    .push_back(dzSim);
-     
-     
-     
-   }
-   
-   
-   
-   //////////////////////////////////
-   //////////////////////////////////
-   ////////   vertices  /////////////
-   //////////////////////////////////
-   //////////////////////////////////
-   
- 
- 
-   
-   
-   
-   smalltree->Fill();
+    }
+
+
+
+    smalltree->Fill();
 }
 
 
@@ -1628,64 +1713,13 @@ TrackingPerf::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //descriptions.addDefault(desc);
 }
 
+
 //define this as a plug-in
 DEFINE_FWK_MODULE(TrackingPerf);
 
 
 
 
-
-
-
-/* undefAlgorithm 	
-ctf 	
-duplicateMerge 	
-cosmics 	
-initialStep 	
-lowPtTripletStep 	
-pixelPairStep 	
-detachedTripletStep 	
-mixedTripletStep 	
-pixelLessStep 	
-tobTecStep 	
-jetCoreRegionalStep 	
-conversionStep 	
-muonSeededStepInOut 	
-muonSeededStepOutIn 	
-outInEcalSeededConv 	
-inOutEcalSeededConv 	
-nuclInter 	
-standAloneMuon 	
-globalMuon 	
-cosmicStandAloneMuon 	
-cosmicGlobalMuon 	
-highPtTripletStep 	
-lowPtQuadStep 	
-detachedQuadStep 	
-reservedForUpgrades1 	
-reservedForUpgrades2 	
-bTagGhostTracks 	
-beamhalo 	
-gsf 	
-hltPixel 	
-hltIter0 	
-hltIter1 	
-hltIter2 	
-hltIter3 	
-hltIter4 	
-hltIterX 	
-hiRegitMuInitialStep 	
-hiRegitMuLowPtTripletStep 	
-hiRegitMuPixelPairStep 	
-hiRegitMuDetachedTripletStep 	
-hiRegitMuMixedTripletStep 	
-hiRegitMuPixelLessStep 	
-hiRegitMuTobTecStep 	
-hiRegitMuMuonSeededStepInOut 	
-hiRegitMuMuonSeededStepOutIn 	
-algoSize 
- */
- 
 void TrackingPerf::clearVariables() {
  //-----------------------
   //fill the tree per track
@@ -1754,6 +1788,23 @@ void TrackingPerf::clearVariables() {
    tree_track_idxPixClusterFirst.clear();
    tree_track_idxSiClusterLast.clear() ;
    tree_track_idxPixClusterLast.clear();
+
+
+   tree_track_numberOfValidPixelHits.clear();
+   tree_track_numberOfValidStripHits.clear();
+   tree_track_numberOfValidStripTIBHits.clear();
+   tree_track_numberOfValidStripTIDHits.clear();
+   tree_track_numberOfValidStripTOBHits.clear();
+   tree_track_numberOfValidStripTECHits.clear();
+   tree_track_numberOfValidPixelBarrelHits.clear();
+   tree_track_numberOfValidPixelEndcapHits.clear();
+   tree_track_hasValidHitInPixelLayer.clear();
+   tree_track_trackerLayersWithMeasurement.clear();
+   tree_track_pixelLayersWithMeasurement.clear();
+   tree_track_stripTECLayersWithMeasurement .clear();
+   tree_track_stripTIBLayersWithMeasurement.clear();
+   tree_track_stripTIDLayersWithMeasurement.clear();
+   tree_track_stripTOBLayersWithMeasurement.clear();
 
 
    tree_SiCluster_subDet.clear();
@@ -1845,35 +1896,6 @@ void TrackingPerf::clearVariables() {
    tree_jet_vz.clear();
 
 
-   tree_genJet_pt.clear();
-   tree_genJet_eta.clear();
-   tree_genJet_phi.clear();
-   tree_genJet_vx.clear();
-   tree_genJet_vy.clear();
-   tree_genJet_vz.clear();
-   tree_genJet_mass.clear();
-   tree_genJet_energy.clear();
-   tree_genJet_status.clear();
-   tree_genJet_pdgId.clear();
-
-
-   tree_track_numberOfValidPixelHits.clear();
-   tree_track_numberOfValidStripHits.clear();
-   tree_track_numberOfValidStripTIBHits.clear();
-   tree_track_numberOfValidStripTIDHits.clear();
-   tree_track_numberOfValidStripTOBHits.clear();
-   tree_track_numberOfValidStripTECHits.clear();
-   tree_track_numberOfValidPixelBarrelHits.clear();
-   tree_track_numberOfValidPixelEndcapHits.clear();
-   tree_track_hasValidHitInPixelLayer.clear();
-   tree_track_trackerLayersWithMeasurement.clear();
-   tree_track_pixelLayersWithMeasurement.clear();
-   tree_track_stripTECLayersWithMeasurement .clear();
-   tree_track_stripTIBLayersWithMeasurement.clear();
-   tree_track_stripTIDLayersWithMeasurement.clear();
-   tree_track_stripTOBLayersWithMeasurement.clear();
-
-
    tree_genParticle_pt.clear();  		 
    tree_genParticle_eta.clear();		 
    tree_genParticle_phi.clear(); 
@@ -1887,7 +1909,38 @@ void TrackingPerf::clearVariables() {
    tree_genParticle_statusCode.clear(); 
    tree_genParticle_mother.clear(); 
 
-   
+
+   tree_genJet_pt.clear();
+   tree_genJet_eta.clear();
+   tree_genJet_phi.clear();
+   tree_genJet_vx.clear();
+   tree_genJet_vy.clear();
+   tree_genJet_vz.clear();
+   tree_genJet_mass.clear();
+   tree_genJet_energy.clear();
+   tree_genJet_status.clear();
+   tree_genJet_pdgId.clear();
+
+
+
+   tree_electron_pt.clear();
+   tree_electron_eta.clear(); 
+   tree_electron_phi.clear();
+   tree_electron_vx.clear();
+   tree_electron_vy.clear();
+   tree_electron_vz.clear();
+   tree_electron_energy.clear();
+
+
+   tree_muon_pt.clear();
+   tree_muon_eta.clear();
+   tree_muon_phi.clear();
+   tree_muon_vx.clear();
+   tree_muon_vy.clear();
+   tree_muon_vz.clear();
+   tree_muon_energy.clear();
+
+
 
 
 
@@ -1895,3 +1948,41 @@ void TrackingPerf::clearVariables() {
 
 
 } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
