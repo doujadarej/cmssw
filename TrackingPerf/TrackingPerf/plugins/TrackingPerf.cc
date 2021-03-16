@@ -112,6 +112,15 @@
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
 
 #include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/PFJetCollection.h"
+
+#include "DataFormats/METReco/interface/CaloMET.h"
+#include "DataFormats/METReco/interface/CaloMETFwd.h"
+#include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/METReco/interface/METFwd.h"
+#include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/METReco/interface/PFMETFwd.h"
+
 
 
 #include "DataFormats/Common/interface/TriggerResults.h"
@@ -126,6 +135,8 @@
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/BTauReco/interface/CATopJetTagInfo.h"
+
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
 //
 // class declaration
@@ -185,6 +196,8 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
  
   //jet information 
   const edm::EDGetTokenT<edm::View<reco::Jet> > jetToken_;
+  const edm::EDGetTokenT<reco::PFJetCollection> thePFJetCollection_; 
+
   //const edm::EDGetTokenT<edm::View<pat::Jet> > viewJetToken_;
   const edm::EDGetTokenT<pat::JetCollection> jetPuppiToken_;
   const edm::EDGetTokenT<pat::JetCollection> ak8jetToken_;
@@ -192,11 +205,8 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   //const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
 
   //met information 
-  //const edm::EDGetTokenT<std::vector<pat::MET> > metTokenAOD_;
-  //const edm::EDGetTokenT<pat::METCollection> metTokenPuppi_;
-  //const edm::EDGetTokenT<pat::METCollection> metTokenNoHF_;
-  //const edm::EDGetTokenT<pat::METCollection> metTokenMINIAOD_;
-  const edm::EDGetTokenT<reco::CaloMETCollection> metToken_;
+  //const edm::EDGetTokenT<reco::PFMET> PFMetToken_;
+  //const edm::EDGetTokenT<reco::CaloMETCollection> metToken_;
   
 
 
@@ -311,6 +321,7 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
                  
   std::vector<int>              tree_track_recoVertex_idx; 
   std::vector<int>              tree_track_recoJet_idx; 
+  std::vector<int>              tree_track_recoPFJet_idx; 
   
   int    runNumber,eventNumber,lumiBlock; 
   
@@ -444,8 +455,28 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 
  //--------------------------------
+ // PFjet infos ------- 
+ //--------------------------------
+ 
+ std::vector<float> tree_PFjet_pt;
+ std::vector<float> tree_PFjet_eta;
+ std::vector<float> tree_PFjet_phi;
+ std::vector<float> tree_PFjet_vx;
+ std::vector<float> tree_PFjet_vy;
+ std::vector<float> tree_PFjet_vz;
+
+
+
+
+ //--------------------------------
  // met infos ------- 
  //--------------------------------
+
+ std::vector<float> tree_PFMet_et; 
+ std::vector<float> tree_PFMet_pt;
+ std::vector<float> tree_PFMet_eta;
+ std::vector<float> tree_PFMet_phi; 
+ std::vector<float> tree_PFMet_sig; 
 
 
   
@@ -511,6 +542,11 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<float> tree_electron_vy;
   std::vector<float> tree_electron_vz;
   std::vector<float> tree_electron_energy; 
+  //variables d'isolation 
+  //traces + calo 
+  //calo seul 
+  //correction du au PU 
+  //leptonID 
 
 
 
@@ -526,6 +562,22 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<float> tree_muon_vy;
   std::vector<float> tree_muon_vz;
   std::vector<float> tree_muon_energy;
+
+  std::vector<double> tree_muon_PFisoVeryTight;
+  std::vector<double> tree_muon_PFisoTight;
+  std::vector<double> tree_muon_PFisoMedium; 
+  std::vector<double> tree_muon_PFisoLoose;
+  std::vector<double> tree_muon_MVAisoLoose;
+  std::vector<double> tree_muon_MVAisoMedium;
+  std::vector<double> tree_muon_MVAisoTight;
+
+  std::vector<double> tree_muon_isGlobalMuon; 
+  std::vector<double> tree_muon_isStandAloneMuon; 
+
+
+  
+  // rajouter isGlobalMuon 
+  // variable d'identification (MVA) -> proba que le muon soit vrai (leptonID)
 
   
   
@@ -550,17 +602,18 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
 	trackAssociatorToken_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getUntrackedParameter<edm::InputTag>("trackAssociator"))),
 	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getUntrackedParameter<edm::InputTag>("beamSpot"))),
   vertexToken_(consumes<reco::VertexCollection>(iConfig.getUntrackedParameter<edm::InputTag>("vertices"))),
-	jetToken_(consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("jetInput"))),
-  //metToken_(consumes<reco::CaloMETCollection> (iConfig.getParameter<edm::InputTag>("metInput"))),
+	jetToken_(consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("jetInput"))),  
+  thePFJetCollection_(consumes<reco::PFJetCollection>(iConfig.getParameter<edm::InputTag>("pfJetCollection"))),
+  //PFMetToken_(consumes<reco::PFMET> (iConfig.getParameter<edm::InputTag>("pfmetInput"))), 
   genParticlesToken_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
   genJetToken_(consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJetInput"))),
   genEventInfoToken_(consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genEventInfoInput"))),
   LHEEventProductToken_(consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("LHEEventProductInput"))),
   pfcandsToken_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("pfcands"))),
   parametersDefinerName_(iConfig.getUntrackedParameter<std::string>("parametersDefiner")),
-  //electronPATToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronPATInput"))),
+  //electronPATToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronPATInput"))), faut prendre les pats 
   //electronToken_(consumes<edm::View<reco::GsfElectron> >(iConfig.getParameter<edm::InputTag>("electronInput"))),
-  muonToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonInput"))),
+  muonToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonInput"))), // prendre pat : voir quels collections de muons sont utilisees (ajouter isglobalmuon)
   useCluster_(iConfig.getUntrackedParameter<bool>("useCluster"))
 {
 
@@ -648,6 +701,8 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
    smalltree->Branch("tree_track_genVertexPos_Z", &tree_track_genVertexPos_Z ); 		  
    smalltree->Branch("tree_track_recoVertex_idx", &tree_track_recoVertex_idx); 
    smalltree->Branch("tree_track_recoJet_idx",    &tree_track_recoJet_idx); 
+   smalltree->Branch("tree_track_recoPFJet_idx",    &tree_track_recoPFJet_idx);
+
    
    
    if(useCluster_){
@@ -762,6 +817,24 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
    smalltree->Branch("tree_jet_vz" , &tree_jet_vz);
 
 
+   
+   smalltree->Branch("tree_PFjet_pt"  , &tree_PFjet_pt);
+   smalltree->Branch("tree_PFjet_eta" , &tree_PFjet_eta);
+   smalltree->Branch("tree_PFjet_phi" , &tree_PFjet_phi);
+   smalltree->Branch("tree_PFjet_vx"  , &tree_PFjet_vx);
+   smalltree->Branch("tree_PFjet_vy" , &tree_PFjet_vy);
+   smalltree->Branch("tree_PFjet_vz" , &tree_PFjet_vz);
+
+
+
+   ////met info 
+   smalltree->Branch("tree_PFMet_et" , &tree_PFMet_et); 
+   smalltree->Branch("tree_PFMet_pt" , &tree_PFMet_pt); 
+   smalltree->Branch("tree_PFMet_eta" , &tree_PFMet_eta); 
+   smalltree->Branch("tree_PFMet_phi" , &tree_PFMet_phi); 
+   smalltree->Branch("tree_PFMet_sig" , &tree_PFMet_sig); 
+
+
    ////gen info 
    smalltree->Branch("tree_genParticle_pt"  , &tree_genParticle_pt);
    smalltree->Branch("tree_genParticle_eta" , &tree_genParticle_eta);
@@ -808,6 +881,19 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
    smalltree->Branch("tree_muon_vy" , &tree_muon_vy);
    smalltree->Branch("tree_muon_vz" , &tree_muon_vz); 
    smalltree->Branch("tree_muon_energy", &tree_muon_energy);
+
+
+   smalltree->Branch("tree_muon_PFisoVeryTight", &tree_muon_PFisoVeryTight);
+   smalltree->Branch("tree_muon_PFisoTight", &tree_muon_PFisoTight);
+   smalltree->Branch("tree_muon_PFisoMedium", &tree_muon_PFisoMedium);
+   smalltree->Branch("tree_muon_PFisoLoose", &tree_muon_PFisoLoose);
+   smalltree->Branch("tree_muon_MVAisoLoose", &tree_muon_MVAisoLoose);
+   smalltree->Branch("tree_muon_MVAisoMedium", &tree_muon_MVAisoMedium);
+   smalltree->Branch("tree_muon_MVAisoTight", &tree_muon_MVAisoTight);
+
+   smalltree->Branch("tree_muon_isGlobalMuon", &tree_muon_isGlobalMuon);
+   smalltree->Branch("tree_muon_isStandAloneMuon", &tree_muon_isStandAloneMuon);
+
 
 
 
@@ -895,6 +981,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
    iSetup.get<TransientRecHitRecord>().get(ttrhbuilder_,theTrackerRecHitBuilder);
 
+   //vector<TransientTrack> t_tks = (*theB).build(tks); 
+
    Handle<reco::BeamSpot> recoBeamSpotHandle;
    iEvent.getByToken(beamSpotToken_, recoBeamSpotHandle);
 
@@ -905,8 +993,11 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<edm::View<reco::Jet> > jets;
    iEvent.getByToken(jetToken_,jets); 
 
-   //edm::EDGetTokenT<std::vector<pat::MET> > metToken_;
-   //iEvent.getByToken(metToken_, met);
+   edm::Handle<reco::PFJetCollection> pfJets;
+   iEvent.getByToken(thePFJetCollection_, pfJets);
+
+   //edm::Handle<reco::PFMET> PFMET;
+   //iEvent.getByToken(PFMetToken_, PFMET);
 
     //not sure??
     //edm::Handle<edm::View<pat::Jet> > view_jets;
@@ -1028,6 +1119,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::map<size_t , int > trackToVextexMap;
    std::map<size_t , int > trackToJetMap;
    std::map<size_t , int > jetToTrackMap;
+   std::map<size_t , int > trackToPFJetMap;
+   std::map<size_t , int > PFjetToTrackMap;
 
    ///// TRACK ASSOCIATION TO VERTICES AND JETS 
 
@@ -1087,6 +1180,26 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       else trackToJetMap[idxTrack] = -1;
       //---------------------------
       //     
+
+      int idxPFJet=0;
+      bool found_match_PF = false;
+      for(unsigned int ij=0;ij<pfJets->size();ij++){
+    
+        const PFJet& PFjet = pfJets->at(ij);
+        TLorentzVector PFjet4m, track4m;
+        PFjet4m.SetPtEtaPhiM(PFjet.pt(), PFjet.eta(), PFjet.phi(), 0);
+        track4m.SetPtEtaPhiM(tracks[i].pt(), tracks[i].eta(), tracks[i].phi(), 0);
+        if( PFjet4m.DeltaR(track4m) < 0.4){
+          found_match_PF = true;
+          break;
+        }
+        else idxPFJet++;
+      }
+      if(found_match_PF) trackToPFJetMap[idxTrack] = idxPFJet;
+      else trackToPFJetMap[idxTrack] = -1;
+
+
+
       idxTrack++;
  
 
@@ -1118,12 +1231,35 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      
    }
 
+   //BEING DEVELOPED AT THE MOMENT 
+   //TO SELECT TRACKS AS INPUT FOR VERTEX REFITTER 
+
+  // const reco::Vertex* v=&(*vertices->begin()); 
+//
+  // vector<TransientTrack> selectedTracks; 
+  //   
+  // for (auto tv=v->tracks_begin(); tv!=v->tracks_end(); tv++)
+  // {
+  //   const reco::TrackRed = tv->castTo<reco::TrackRef>(); 
+  //   if (track.dxy>3)
+  //   {
+  //     TransientTrack transientTrack = theTransientTrackBuilder_->build(trackRef); 
+  //     transientTracj.setBeamsPORT(vertexBeamSpot);
+  //     selectedTracks.push_back(transientTrack); 
+  //   }
+  // }
+
+
+
+
 
    //////////////////////////////////
    //////////////////////////////////
    ////////   jets ///  /////////////
    //////////////////////////////////
    //////////////////////////////////
+
+   //FIX ME: vx, vy, vz not filled in tree
    
    int nJet = jets->size();
    //cout << "number of jets "<<nJet<<endl;  
@@ -1145,6 +1281,18 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    ////////   MET   /////////////////
    //////////////////////////////////
    //////////////////////////////////
+
+
+    //needs fixing, product not found, no error at compilation
+
+   //const Met& met = PFMET->at(kl); 
+   //tree_PFMet_et.push_back(PFMET->et());
+   //tree_PFMet_pt.push_back(PFMET->pt()); 
+   //tree_PFMet_eta.push_back(PFMET->eta()); 
+   //tree_PFMet_phi.push_back(PFMET->phi()); 
+   //tree_PFMet_sig.push_back(PFMET->significance()); 
+     
+  
 
 
 
@@ -1183,11 +1331,18 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
 
+    /// WOULD BE COOL TO ADD MATCHING BETWEEN GEN PARTICLES AND SIM TRACKS
+    // PROBABLY NEEDS TO BE DONE BY HAND 
+
+
 
     ///GEN JETS 
 
     int nGenJets = genJets->size();
     //cout << "number of gen Jets "<<nGenJets<<endl; 
+
+
+    //FIX ME : genJet vx, vy and vz not filled in tree
  
     for (auto const & genJet : *genJets)
     {
@@ -1222,6 +1377,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int nMuons = muons->size();
 
 
+
     for (auto const & muon : *muons)
     {
       tree_muon_pt.push_back(muon.pt());
@@ -1231,6 +1387,31 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       tree_muon_vy.push_back(muon.vy());
       tree_muon_vz.push_back(muon.vz());
       tree_muon_energy.push_back(muon.energy());
+    }
+
+    //for (const auto& muon: *muons){
+    //if (muon.passed(reco::Muon::CutBasedIdTight|reco::Muon::PFIsoMedium)) std::cout << "MUON PASSED SELECTION "<<endl;
+    //}
+
+    for (const auto& muon: *muons){
+    if (muon.passed(reco::Muon::PFIsoVeryTight))  (tree_muon_PFisoVeryTight.push_back(true));
+    else (tree_muon_PFisoVeryTight.push_back(false));
+    if (muon.passed(reco::Muon::PFIsoTight))      (tree_muon_PFisoTight.push_back(true));
+    else (tree_muon_PFisoTight.push_back(false)); 
+    if (muon.passed(reco::Muon::PFIsoMedium))     (tree_muon_PFisoMedium.push_back(true));
+    else (tree_muon_PFisoMedium.push_back(false));
+    if (muon.passed(reco::Muon::PFIsoLoose ))     (tree_muon_PFisoLoose.push_back(true));
+    else (tree_muon_PFisoLoose.push_back(false));
+    if (muon.passed(reco::Muon::MvaLoose ))       (tree_muon_MVAisoLoose.push_back(true));
+    else (tree_muon_MVAisoLoose.push_back(true));
+    if (muon.passed(reco::Muon::MvaMedium ))      (tree_muon_MVAisoMedium.push_back(true));
+    else (tree_muon_MVAisoMedium.push_back(false));
+    if (muon.passed(reco::Muon::MvaTight ))       (tree_muon_MVAisoTight.push_back(true));
+    else (tree_muon_MVAisoTight.push_back(false));
+    if (muon.isGlobalMuon())                        (tree_muon_isGlobalMuon.push_back(true));
+    else (tree_muon_isGlobalMuon.push_back(false));
+    if (muon.isStandAloneMuon())                        (tree_muon_isStandAloneMuon.push_back(true));
+    else (tree_muon_isStandAloneMuon.push_back(false));
     }
 
 
@@ -1321,6 +1502,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_track_originalAlgo.push_back(itTrack->originalAlgo());
      tree_track_algo.push_back(itTrack->algo());
      tree_track_stopReason.push_back(itTrack->stopReason());
+
+    
 
 
      //--------------------------------
@@ -1439,6 +1622,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
      tree_track_recoVertex_idx.push_back(trackToVextexMap[iTrack]);
      tree_track_recoJet_idx.push_back(trackToJetMap[iTrack]);
+     tree_track_recoPFJet_idx.push_back(trackToPFJetMap[iTrack]);
      
      tree_track_simtrack_charge 	      .push_back(simtrack_charge);	     
      tree_track_simtrack_pt		      .push_back(simtrack_pt);  		     
@@ -1784,6 +1968,7 @@ void TrackingPerf::clearVariables() {
 
    tree_track_recoVertex_idx.clear();
    tree_track_recoJet_idx.clear();
+   tree_track_recoPFJet_idx.clear();
    tree_track_idxSiClusterFirst.clear();
    tree_track_idxPixClusterFirst.clear();
    tree_track_idxSiClusterLast.clear() ;
@@ -1872,7 +2057,7 @@ void TrackingPerf::clearVariables() {
 
    tree_track_recoVertex_idx.clear();
    tree_track_recoJet_idx.clear();
-
+   tree_track_recoPFJet_idx.clear();
 
    tree_simtrack_isRecoMatched.clear();
    tree_simtrack_pca_dxy.clear();
@@ -1894,6 +2079,20 @@ void TrackingPerf::clearVariables() {
    tree_jet_vx.clear();
    tree_jet_vy.clear();
    tree_jet_vz.clear();
+
+
+   tree_PFjet_pt.clear();
+   tree_PFjet_eta.clear();
+   tree_PFjet_phi.clear();
+   tree_PFjet_vx.clear();
+   tree_PFjet_vy.clear();
+   tree_PFjet_vz.clear();
+
+   tree_PFMet_et.clear(); 
+   tree_PFMet_pt.clear(); 
+   tree_PFMet_eta.clear(); 
+   tree_PFMet_phi.clear(); 
+   tree_PFMet_sig.clear(); 
 
 
    tree_genParticle_pt.clear();  		 
@@ -1940,6 +2139,14 @@ void TrackingPerf::clearVariables() {
    tree_muon_vz.clear();
    tree_muon_energy.clear();
 
+   tree_muon_PFisoVeryTight.clear(); 
+   tree_muon_PFisoTight.clear(); 
+   tree_muon_PFisoMedium.clear(); 
+   tree_muon_PFisoLoose.clear(); 
+   tree_muon_MVAisoLoose.clear(); 
+   tree_muon_MVAisoMedium.clear(); 
+   tree_muon_MVAisoTight.clear(); 
+
 
 
 
@@ -1948,41 +2155,3 @@ void TrackingPerf::clearVariables() {
 
 
 } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
