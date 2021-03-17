@@ -1,1 +1,15 @@
-Introduction to CMSSW: http://cms-sw.github.io
+recipe to quickly check the code on simu RPV SUSY model (ctau 10 cm)
+
+mkdir test_ntuple
+cd test_ntuple 
+cmsrel CMSSW_10_6_0 
+cd CMSSW_10_6_0/src
+cmsenv 
+git cms-init 
+git pull https://github.com/doujadarej/cmssw.git NTuple_forAnalysis
+git cms-addpkg TrackingPerf/TrackingPerf 
+git cms-addpkg test 
+scramv1 b -j6 
+cd test 
+cp /opt/sbg/cms/ui3_data1/ddarej/NTupleCreator/CMSSW_10_6_0/src/test/step2.root .
+cmsRun step3_thebest.py
