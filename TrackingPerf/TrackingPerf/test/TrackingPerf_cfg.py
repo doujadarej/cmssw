@@ -32,60 +32,42 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 
 #process.GlobalTag.globaltag = cms.string('auto')
 
-
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
+process.load('FWCore.MessageService.MessageLogger_cfi')
+process.load('Configuration.EventContent.EventContent_cff')
+process.load('SimGeneral.MixingModule.mixNoPU_cfi')
+process.load('SimGeneral.MixingModule.mix_POISSON_average_cfi')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load('Configuration.StandardSequences.MagneticField_cff')
+process.load('Configuration.StandardSequences.RawToDigi_cff')
+process.load('Configuration.StandardSequences.L1Reco_cff')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
+process.load('Configuration.StandardSequences.RecoSim_cff')
+process.load('CommonTools.ParticleFlow.EITopPAG_cff')
+process.load('PhysicsTools.PatAlgos.slimming.metFilterPaths_cff')
+process.load('Configuration.StandardSequences.PATMC_cff')
+process.load('Configuration.StandardSequences.Validation_cff')
+process.load('DQMServices.Core.DQMStoreNonLegacy_cff')
+process.load('DQMOffline.Configuration.DQMOfflineMC_cff')
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = '92X_upgrade2017_realistic_v7'  
+#process.GlobalTag.globaltag = '92X_upgrade2017_realistic_v7' 
+from Configuration.AlCa.GlobalTag import GlobalTag 
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2018_realistic', '')
 
 
-### standard includes
-process.load('Configuration/StandardSequences/Services_cff')
-process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load("Configuration.StandardSequences.RawToDigi_cff")
-process.load("Configuration.EventContent.EventContent_cff")
-process.load("Configuration.StandardSequences.Reconstruction_cff")
-process.load("Configuration.StandardSequences.MagneticField_cff")
-
-### validation-specific includes
-process.load("SimTracker.TrackAssociatorProducers.quickTrackAssociatorByHits_cfi")
-process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
-process.load("Validation.RecoTrack.MultiTrackValidatorGenPs_cfi")
-process.load("DQMServices.Components.EDMtoMEConverter_cff")
-process.load("Validation.Configuration.postValidation_cff")
-process.quickTrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
-
-process.load("SimTracker.TrackAssociatorProducers.trackAssociatorByChi2_cfi")
-process.trackAssociatorByChi2.chi2cut = cms.double(500.0)
-
-
-process.load("RecoTracker.TrackProducer.TrackRefitters_cff")
- 
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2) )
 
-######## ADDED THIS BECAUSE ERROR MESSAGE EXEPTION OF CATEGORY PRODUCT NOT FOUND 
-#process.options = cms.untracked.PSet(
-#SkipEvent = cms.untracked.vstring('ProductNotFound')
-#)
-########### NOT WORKING, TTree empty -_- 
+
 
 process.source = cms.Source("PoolSource",
-    # replace 'myfile.root' with the source file you want to use
-    fileNames = cms.untracked.vstring(
- 
-
-#'file:/home/ddarej/CMSSW_9_2_8/src/step3.root'
-#'/store/mc/RunIISummer17DRPremix/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/GEN-SIM-RECODEBUG/92X_upgrade2017_realistic_v10_ext1-v2/50001/F2114E50-3599-E711-A195-002590D9D8C0.root'
-
-
-#'file:/opt/sbg/data/safe1/cms/jandrea/ForDouja/8A1B91E4-479A-E711-87F4-0CC47AC08BC8.root'
-
-'file:/opt/sbg/data/safe1/cms/jandrea/TrackingSeedDefinition/10024.0_TTbar_13+TTbar_13TeV_TuneCUETP8M1_2017_GenSimFull+DigiFull_2017+RecoFull_2017+ALCAFull_2017+HARVESTFull_2017/step3.root' 
-	 )
+    fileNames = cms.untracked.vstring('file:step3.root'),	 
 )
 
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("trackingNTuple1.root") )
+process.TFileService = cms.Service("TFileService", fileName = cms.string("trackingNTuple.root") )
 
 
 
@@ -109,20 +91,25 @@ process.load("SimGeneral.MixingModule.trackingTruthProducerSelection_cfi")
 
 process.trackingParticles.simHitCollections = cms.PSet( )
 ############## CHANGED THIS BECAUSE ERROR MESSAGE ABOUT MIXING  
-process.mix.playback = cms.untracked.bool(False)
-process.mix.digitizers = cms.PSet(
-     mergedtruth = cms.PSet(process.trackingParticles)
-)
+#process.mix.playback = cms.untracked.bool(False)
+#process.mix.digitizers = cms.PSet(
+#     mergedtruth = cms.PSet(process.trackingParticles)
+#)
+
+
+
+
 for a in process.aliases: delattr(process, a)
+#process.RandomNumberGeneratorService.restoreStateLabel=cms.untracked.string("randomEngineStateProducer")
 
 
-#process.load("SimGeneral.TrackingAnalysis.simHitTPAssociation_cfi")
-#
-#process.load("SimTracker.TrackerHitAssociation.tpClusterProducer_cfi")
-#process.load("SimTracker.TrackAssociatorProducers.quickTrackAssociatorByHits_cfi")
+process.load("SimGeneral.TrackingAnalysis.simHitTPAssociation_cfi")
+
+process.load("SimTracker.TrackerHitAssociation.tpClusterProducer_cfi")
+process.load("SimTracker.TrackAssociatorProducers.quickTrackAssociatorByHits_cfi")
 #process.load("SimTracker.TrackAssociatorProducers.trackAssociatorByHits_cfi")
-#process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
-#process.load("SimG4Core.Application.g4SimHits_cfi")
+process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
+process.load("SimG4Core.Application.g4SimHits_cfi")
 
 
 process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
@@ -135,7 +122,8 @@ process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
       beamSpot                 = cms.untracked.InputTag('offlineBeamSpot'),
       vertices                 = cms.untracked.InputTag('offlinePrimaryVertices'),
       jetInput                 = cms.InputTag('ak4PFJets'), 
-      #metInput                = cms.InputTag('patMETsPFlow'),
+      pfJetCollection          = cms.InputTag('ak4PFJets'),
+      #pfmetInput               = cms.InputTag('pfMet'),
       genParticles             = cms.InputTag('genParticles'),
       genJetInput              = cms.InputTag("slimmedGenJets"),
       genEventInfoInput        = cms.InputTag("generator"),
@@ -143,48 +131,48 @@ process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
       pfcands                  = cms.InputTag("packedPFCandidates"),
       parametersDefiner        = cms.untracked.string('LhcParametersDefinerForTP'),      
       #electronInput            = cms.untracked.InputTag("slimmedElectrons"),
-      electronInput            = cms.InputTag("patElectronsPFlow"),
+      #electronInput            = cms.InputTag("patElectronsPFlow"),
       muonInput                = cms.InputTag("slimmedMuons"),
       TTRHBuilder              = cms.string('WithTrackAngle'),
       useCluster               = cms.untracked.bool(False)
 )
 
-#process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-#process.load("SimGeneral.MixingModule.mixNoPU_cfi")
-#process.load("Configuration.StandardSequences.Simulation_cff")
-#
-#
-#process.load("Geometry.CMSCommonData.cmsExtendedGeometryXML_cfi")
-##process.load("SimTransport.HectorProducer.HectorTransport_cfi"
-#
-#
-#
-#process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-#	g4SimHits = cms.PSet(
-#   		 initialSeed = cms.untracked.uint32(123456789),
-#    		 engineName = cms.untracked.string('TRandom3')
-#  	),
-#  	LHCTransport = cms.PSet(
-#    		initialSeed = cms.untracked.uint32(321456789),
-#    		engineName = cms.untracked.string('TRandom3')
-#  	)
-#
-#)
- 
-#process.simHitTPAssocProducer.simHitSrc = cms.VInputTag( 
-#	cms.InputTag('g4SimHits','TrackerHitsTIBLowTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsTIBHighTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsTIDLowTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsTIDHighTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsTOBLowTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsTOBHighTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsTECLowTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsTECHighTof'),
-#	cms.InputTag( 'g4SimHits','TrackerHitsPixelBarrelLowTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsPixelBarrelHighTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsPixelEndcapLowTof'),
-#	cms.InputTag('g4SimHits','TrackerHitsPixelEndcapHighTof') 
-#	)
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+process.load("SimGeneral.MixingModule.mixNoPU_cfi")
+process.load("Configuration.StandardSequences.Simulation_cff")
+
+
+process.load("Geometry.CMSCommonData.cmsExtendedGeometryXML_cfi")
+#process.load("SimTransport.HectorProducer.HectorTransport_cfi"
+
+
+
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+	g4SimHits = cms.PSet(
+   		 initialSeed = cms.untracked.uint32(123456789),
+    		 engineName = cms.untracked.string('TRandom3')
+  	),
+  	LHCTransport = cms.PSet(
+    		initialSeed = cms.untracked.uint32(321456789),
+    		engineName = cms.untracked.string('TRandom3')
+  	)
+
+)
+
+process.simHitTPAssocProducer.simHitSrc = cms.VInputTag( 
+	cms.InputTag('g4SimHits','TrackerHitsTIBLowTof'),
+	cms.InputTag('g4SimHits','TrackerHitsTIBHighTof'),
+	cms.InputTag('g4SimHits','TrackerHitsTIDLowTof'),
+	cms.InputTag('g4SimHits','TrackerHitsTIDHighTof'),
+	cms.InputTag('g4SimHits','TrackerHitsTOBLowTof'),
+	cms.InputTag('g4SimHits','TrackerHitsTOBHighTof'),
+	cms.InputTag('g4SimHits','TrackerHitsTECLowTof'),
+	cms.InputTag('g4SimHits','TrackerHitsTECHighTof'),
+	cms.InputTag( 'g4SimHits','TrackerHitsPixelBarrelLowTof'),
+	cms.InputTag('g4SimHits','TrackerHitsPixelBarrelHighTof'),
+	cms.InputTag('g4SimHits','TrackerHitsPixelEndcapLowTof'),
+	cms.InputTag('g4SimHits','TrackerHitsPixelEndcapHighTof') 
+	)
 
 
 #process.p = cms.Path(trackingParticlesIntime*simHitTPAssocProducer*tpClusterProducer*process.trackingPerf)

@@ -1,5 +1,13 @@
 // system include files
 #include <memory>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <map>
+#include <utility>
+#include <TNtuple.h>
+#include <bitset>
 
 // user include files
 
@@ -52,13 +60,27 @@
 
 #include "RecoTracker/TransientTrackingRecHit/interface/TkTransientTrackingRecHitBuilder.h"
 
+#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
+#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
 
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit1D.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
+
+
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "RecoVertex/VertexPrimitives/interface/ConvertToFromReco.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalTrajectoryExtrapolatorToLine.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalImpactPointExtrapolator.h"
 
 
 #include "TrackingTools/PatternTools/interface/Trajectory.h"
@@ -138,6 +160,146 @@
 
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
+//#include "HiggsCPinTauDecays/TauRefit/interface/RefitVertex.h"
+
+#include <DataFormats/VertexReco/interface/Vertex.h>
+
+
+///////// ALL GUIGUI'S HEADERS
+
+
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include <FWCore/Framework/interface/ESHandle.h>
+#include <FWCore/Framework/interface/LuminosityBlock.h>
+#include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <FWCore/Common/interface/TriggerNames.h>
+
+#include <DataFormats/PatCandidates/interface/Muon.h>
+#include <DataFormats/PatCandidates/interface/Tau.h>
+#include <DataFormats/PatCandidates/interface/MET.h>
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include <DataFormats/PatCandidates/interface/GenericParticle.h>
+#include "DataFormats/VertexReco/interface/Vertex.h"
+//#include "HiggsCPinTauDecays/TauRefit/interface/RefitVertex.h"
+//#include "HiggsCPinTauDecays/TauRefit/plugins/AdvancedRefitVertexProducer.h"
+#include <DataFormats/Common/interface/View.h>
+#include <DataFormats/Candidate/interface/Candidate.h>
+#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+#include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/METReco/interface/PFMET.h>
+#include <DataFormats/METReco/interface/PFMETCollection.h>
+#include <DataFormats/JetReco/interface/PFJet.h>
+#include <DataFormats/JetReco/interface/PFJetCollection.h>
+#include <DataFormats/PatCandidates/interface/PackedCandidate.h>
+#include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
+
+#include <DataFormats/Math/interface/LorentzVector.h>
+#include <DataFormats/VertexReco/interface/Vertex.h>
+//#include <HiggsCPinTauDecays/TauRefit/plugins/AdvancedRefitVertexProducer.h>
+#include <DataFormats/Common/interface/MergeableCounter.h>
+#include "DataFormats/Math/interface/deltaR.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
+#include <CommonTools/UtilAlgos/interface/TFileService.h>
+
+///#include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
+
+//#include <LLRHiggsTauTau/NtupleProducer/interface/CutSet.h>
+//#include <LLRHiggsTauTau/NtupleProducer/interface/LeptonIsoHelper.h>
+//#include <LLRHiggsTauTau/NtupleProducer/interface/DaughterDataHelpers.h>
+////#include <LLRHiggsTauTau/NtupleProducer/interface/FinalStates.h>
+//#include <LLRHiggsTauTau/NtupleProducer/interface/MCHistoryTools.h>
+//#include <LLRHiggsTauTau/NtupleProducer/interface/PUReweight.h>
+////#include <LLRHiggsTauTau/NtupleProducer/interface/VBFCandidateJetSelector.h>
+////#include <LLRHiggsTauTau/NtupleProducer/interface/bitops.h>
+////#include <LLRHiggsTauTau/NtupleProducer/interface/Fisher.h>
+////#include <LLRHiggsTauTau/NtupleProducer/interface/HTauTauConfigHelper.h>
+////#include "HZZ4lNtupleFactory.h"
+//#include <LLRHiggsTauTau/NtupleProducer/interface/PhotonFwd.h>
+////#include "LLRHiggsTauTau/NtupleProducer/interface/triggerhelper.h"
+//#include "LLRHiggsTauTau/NtupleProducer/interface/PUReweight.h"
+////#include "LLRHiggsTauTau/NtupleProducer/Utils/OfflineProducerHelper.h"
+//#include "LLRHiggsTauTau/NtupleProducer/interface/ParticleType.h"
+//#include "LLRHiggsTauTau/NtupleProducer/interface/GenFlags.h"
+//#include "LLRHiggsTauTau/NtupleProducer/interface/GenHelper.h"
+//
+//#include "LLRHiggsTauTau/NtupleProducer/interface/TauDecay_CMSSW.h"
+//#include "Validation/EventGenerator/interface/PdtPdgMini.h"
+//#include "LLRHiggsTauTau/NtupleProducer/interface//DataMCType.h"
+//#include "LLRHiggsTauTau/NtupleProducer/interface/PDGInfo.h"
+
+
+#include "Geometry/Records/interface/HcalParametersRcd.h"
+#include "FWCore/Framework/interface/eventsetuprecord_registration_macro.h"
+#include "FWCore/Framework/interface/ESTransientHandle.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
+#include "CondFormats/GeometryObjects/interface/HcalParameters.h"
+#include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/HcalCommonData/interface/HcalParametersFromDD.h"
+
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "JetMETCorrections/Modules/interface/JetResolution.h"
+
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "RecoVertex/VertexPrimitives/interface/ConvertToFromReco.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalTrajectoryExtrapolatorToLine.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalImpactPointExtrapolator.h"
+
+#include "TLorentzVector.h"
+#include "TMatrixDSym.h"
+#include "TVectorD.h"
+#include "TVector3.h"
+#include "boost/functional/hash.hpp"
+
+#include "DataFormats/L1Trigger/interface/Tau.h"
+#include "DataFormats/L1Trigger/interface/Jet.h"
+
+//#include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h"
+//#include "TauAnalysisTools/TauTriggerSFs/interface/SFProvider.h"
+//#include "TauPOG/TauIDSFs/interface/TauIDSFTool.h"
+//#include "LLRHiggsTauTau/NtupleProducer/interface/PileUp.h"
+//
+#include <DataFormats/HepMCCandidate/interface/GenStatusFlags.h>
+
+//#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
+//#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfitIntegrand.h"
+//#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+//#include "TauAnalysis/ClassicSVfit/interface/SVfitIntegratorMarkovChain.h"
+//#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
+
+//#include "HTT-utilities/RecoilCorrections/interface/RecoilCorrector.h"
+
 //
 // class declaration
 //
@@ -204,9 +366,6 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   const edm::EDGetTokenT<pat::JetCollection> ak10jetToken_;
   //const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
 
-  //met information 
-  //const edm::EDGetTokenT<reco::PFMET> PFMetToken_;
-  //const edm::EDGetTokenT<reco::CaloMETCollection> metToken_;
   
 
 
@@ -224,16 +383,17 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 
   //electrons
-  //const edm::EDGetTokenT<edm::View<reco::GsfElectron> > electronToken_;
-  //const edm::EDGetTokenT<pat::ElectronCollection> electronPATToken_;
-
+  const edm::EDGetTokenT<pat::ElectronCollection> electronPATToken_;
   //muons 
   const edm::EDGetTokenT<pat::MuonCollection> muonToken_;
+  //pet MET
+  const edm::EDGetTokenT<pat::METCollection> metToken_;
 
 
 
   //additional 
   bool useCluster_;
+  
   TTree *smalltree;
 
 
@@ -436,10 +596,23 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<float> tree_vtx_PosX;	
   std::vector<float> tree_vtx_PosY;	
   std::vector<float> tree_vtx_PosZ; 
+  std::vector<float> tree_vtx_NChi2;
   
   std::vector<float> tree_vtx_PosXError;	
   std::vector<float> tree_vtx_PosYError;	
   std::vector<float> tree_vtx_PosZError; 
+
+
+  // for refitted vertex with muon 
+
+  std::vector<float> tree_vtxRefittedWMuons_PosX;	
+  std::vector<float> tree_vtxRefittedWMuons_PosY;	
+  std::vector<float> tree_vtxRefittedWMuons_PosZ; 
+  std::vector<float> tree_vtxRefittedWMuons_NChi2; 
+
+  std::vector<float> tree_vtxRefittedWMuons_PosXError;	
+  std::vector<float> tree_vtxRefittedWMuons_PosYError;	
+  std::vector<float> tree_vtxRefittedWMuons_PosZError; 
   
   
  //--------------------------------
@@ -458,12 +631,12 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
  // PFjet infos ------- 
  //--------------------------------
  
- std::vector<float> tree_PFjet_pt;
+ /*std::vector<float> tree_PFjet_pt;
  std::vector<float> tree_PFjet_eta;
  std::vector<float> tree_PFjet_phi;
  std::vector<float> tree_PFjet_vx;
  std::vector<float> tree_PFjet_vy;
- std::vector<float> tree_PFjet_vz;
+ std::vector<float> tree_PFjet_vz;*/
 
 
 
@@ -496,6 +669,7 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector< double > tree_genParticle_mass;
   std::vector< int >    tree_genParticle_statusCode; 
   std::vector< int > tree_genParticle_mother;
+  std::vector< int > tree_genParticle_mother_pdgId;
 
 
 
@@ -601,20 +775,20 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
 	trackSrc_( consumes<edm::View<reco::Track> >( iConfig.getParameter<edm::InputTag>("trackLabel") )),
 	trackAssociatorToken_(consumes<reco::TrackToTrackingParticleAssociator>(iConfig.getUntrackedParameter<edm::InputTag>("trackAssociator"))),
 	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getUntrackedParameter<edm::InputTag>("beamSpot"))),
-  vertexToken_(consumes<reco::VertexCollection>(iConfig.getUntrackedParameter<edm::InputTag>("vertices"))),
+ 	vertexToken_(consumes<reco::VertexCollection>(iConfig.getUntrackedParameter<edm::InputTag>("vertices"))),
 	jetToken_(consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("jetInput"))),  
-  thePFJetCollection_(consumes<reco::PFJetCollection>(iConfig.getParameter<edm::InputTag>("pfJetCollection"))),
-  //PFMetToken_(consumes<reco::PFMET> (iConfig.getParameter<edm::InputTag>("pfmetInput"))), 
-  genParticlesToken_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
-  genJetToken_(consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJetInput"))),
-  genEventInfoToken_(consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genEventInfoInput"))),
-  LHEEventProductToken_(consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("LHEEventProductInput"))),
-  pfcandsToken_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("pfcands"))),
-  parametersDefinerName_(iConfig.getUntrackedParameter<std::string>("parametersDefiner")),
-  //electronPATToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronPATInput"))), faut prendre les pats 
-  //electronToken_(consumes<edm::View<reco::GsfElectron> >(iConfig.getParameter<edm::InputTag>("electronInput"))),
-  muonToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonInput"))), // prendre pat : voir quels collections de muons sont utilisees (ajouter isglobalmuon)
-  useCluster_(iConfig.getUntrackedParameter<bool>("useCluster"))
+  	thePFJetCollection_(consumes<reco::PFJetCollection>(iConfig.getParameter<edm::InputTag>("pfJetCollection"))),
+  	//PFMetToken_(consumes<reco::PFMET> (iConfig.getParameter<edm::InputTag>("pfmetInput"))), 
+  	genParticlesToken_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles"))),
+  	genJetToken_(consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJetInput"))),
+  	genEventInfoToken_(consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genEventInfoInput"))),
+  	LHEEventProductToken_(consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("LHEEventProductInput"))),
+  	pfcandsToken_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("pfcands"))),
+  	parametersDefinerName_(iConfig.getUntrackedParameter<std::string>("parametersDefiner")),
+  	electronPATToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronInput"))),
+  	muonToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonInput"))), 
+  	metToken_(consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metInput"))),
+  	useCluster_(iConfig.getUntrackedParameter<bool>("useCluster"))
 {
 
 
@@ -773,11 +947,17 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
    smalltree->Branch("tree_vtx_PosX", &tree_vtx_PosX);        
    smalltree->Branch("tree_vtx_PosY", &tree_vtx_PosY);        
    smalltree->Branch("tree_vtx_PosZ", &tree_vtx_PosZ); 
+   smalltree->Branch("tree_vtx_NChi2", &tree_vtx_NChi2); 
    
    smalltree->Branch("tree_vtx_PosXError", &tree_vtx_PosXError);        
    smalltree->Branch("tree_vtx_PosYError", &tree_vtx_PosYError);        
    smalltree->Branch("tree_vtx_PosZError", &tree_vtx_PosZError); 
   
+
+   smalltree->Branch("tree_vtxRefittedWMuons_PosX", &tree_vtxRefittedWMuons_PosX);        
+   smalltree->Branch("tree_vtxRefittedWMuons_PosY", &tree_vtxRefittedWMuons_PosY);        
+   smalltree->Branch("tree_vtxRefittedWMuons_PosZ", &tree_vtxRefittedWMuons_PosZ); 
+   smalltree->Branch("tree_vtxRefittedWMuons_NChi2", &tree_vtxRefittedWMuons_NChi2);
   
   //  int runNumber,eventNumber,lumiBlock;
   //
@@ -818,12 +998,12 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
 
 
    
-   smalltree->Branch("tree_PFjet_pt"  , &tree_PFjet_pt);
+   /*smalltree->Branch("tree_PFjet_pt"  , &tree_PFjet_pt);
    smalltree->Branch("tree_PFjet_eta" , &tree_PFjet_eta);
    smalltree->Branch("tree_PFjet_phi" , &tree_PFjet_phi);
    smalltree->Branch("tree_PFjet_vx"  , &tree_PFjet_vx);
    smalltree->Branch("tree_PFjet_vy" , &tree_PFjet_vy);
-   smalltree->Branch("tree_PFjet_vz" , &tree_PFjet_vz);
+   smalltree->Branch("tree_PFjet_vz" , &tree_PFjet_vz);*/
 
 
 
@@ -847,6 +1027,7 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
    smalltree->Branch("tree_genParticle_mass" , &tree_genParticle_mass);
    smalltree->Branch("tree_genParticle_statusCode", &tree_genParticle_statusCode); 
    smalltree->Branch("tree_genParticle_mother" , &tree_genParticle_mother);
+   smalltree->Branch("tree_genParticle_mother_pdgId" , &tree_genParticle_mother_pdgId);
 
    //genJet info 
    smalltree->Branch("tree_genJet_pt"  , &tree_genJet_pt);
@@ -975,9 +1156,9 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iSetup.get<TrackerDigiGeometryRecord>().get(TG);
    const TrackerGeometry* theTrackerGeometry = TG.product();*/
     
-   edm::ESHandle<TransientTrackBuilder> theB;
-   iSetup.get<TransientTrackRecord>().get( "TransientTrackBuilder", theB );
-  
+   //edm::ESHandle<TransientTrackBuilder> theB;
+   //iSetup.get<TransientTrackRecord>().get( "TransientTrackBuilder", theB );
+  //
    edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
    iSetup.get<TransientRecHitRecord>().get(ttrhbuilder_,theTrackerRecHitBuilder);
 
@@ -986,6 +1167,9 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    Handle<reco::BeamSpot> recoBeamSpotHandle;
    iEvent.getByToken(beamSpotToken_, recoBeamSpotHandle);
 
+  //uncomment if needed 
+   //edm::ESHandle<TransientTrackBuilder> theTransientTrackBuilder;
+   //iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTransientTrackBuilder);
 
    edm::Handle<reco::VertexCollection> vertices;
    iEvent.getByToken(vertexToken_, vertices);
@@ -993,12 +1177,14 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<edm::View<reco::Jet> > jets;
    iEvent.getByToken(jetToken_,jets); 
 
-   edm::Handle<reco::PFJetCollection> pfJets;
-   iEvent.getByToken(thePFJetCollection_, pfJets);
+   //edm::Handle<reco::PFJetCollection> pfJets;
+   //iEvent.getByToken(thePFJetCollection_, pfJets);
 
-   //edm::Handle<reco::PFMET> PFMET;
-   //iEvent.getByToken(PFMetToken_, PFMET);
-
+   //edm::Handle<edm:View<reco::MET> PFMETs;
+    edm::Handle<pat::METCollection> PFMETs;
+   iEvent.getByToken(metToken_, PFMETs);
+    
+    
     //not sure??
     //edm::Handle<edm::View<pat::Jet> > view_jets;
    //iEvent.getByToken(viewJetToken_,view_jets); 
@@ -1021,8 +1207,8 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //edm::Handle<edm::View<reco::GsfElectron> > electrons;
    //iEvent.getByToken(electronToken_, electrons);
 
-    //edm::Handle<pat::ElectronCollection> electronsPAT;
-    //iEvent.getByToken(electronPATToken_,electronsPAT);
+    edm::Handle<pat::ElectronCollection> electronsPAT;
+    iEvent.getByToken(electronPATToken_,electronsPAT);
 
    edm::Handle<pat::MuonCollection> muons;
    iEvent.getByToken(muonToken_,muons);
@@ -1181,7 +1367,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //---------------------------
       //     
 
-      int idxPFJet=0;
+      /*int idxPFJet=0;
       bool found_match_PF = false;
       for(unsigned int ij=0;ij<pfJets->size();ij++){
     
@@ -1196,13 +1382,12 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         else idxPFJet++;
       }
       if(found_match_PF) trackToPFJetMap[idxTrack] = idxPFJet;
-      else trackToPFJetMap[idxTrack] = -1;
+      else trackToPFJetMap[idxTrack] = -1;*/
 
 
 
       idxTrack++;
  
-
     } 
 
 
@@ -1221,6 +1406,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_vtx_PosX.push_back(vertex.x());
      tree_vtx_PosY.push_back(vertex.y());
      tree_vtx_PosZ.push_back(vertex.z());
+     tree_vtx_NChi2.push_back(vertex.normalizedChi2());
      
      tree_vtx_PosXError.push_back(vertex.xError());
      tree_vtx_PosYError.push_back(vertex.yError());
@@ -1231,26 +1417,11 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      
    }
 
-   //BEING DEVELOPED AT THE MOMENT 
-   //TO SELECT TRACKS AS INPUT FOR VERTEX REFITTER 
-
-  // const reco::Vertex* v=&(*vertices->begin()); 
-//
-  // vector<TransientTrack> selectedTracks; 
-  //   
-  // for (auto tv=v->tracks_begin(); tv!=v->tracks_end(); tv++)
-  // {
-  //   const reco::TrackRed = tv->castTo<reco::TrackRef>(); 
-  //   if (track.dxy>3)
-  //   {
-  //     TransientTrack transientTrack = theTransientTrackBuilder_->build(trackRef); 
-  //     transientTracj.setBeamsPORT(vertexBeamSpot);
-  //     selectedTracks.push_back(transientTrack); 
-  //   }
-  // }
 
 
 
+///////// vertex refitting used to be here 
+   
 
 
    //////////////////////////////////
@@ -1285,13 +1456,16 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //needs fixing, product not found, no error at compilation
 
-   //const Met& met = PFMET->at(kl); 
-   //tree_PFMet_et.push_back(PFMET->et());
-   //tree_PFMet_pt.push_back(PFMET->pt()); 
-   //tree_PFMet_eta.push_back(PFMET->eta()); 
-   //tree_PFMet_phi.push_back(PFMET->phi()); 
-   //tree_PFMet_sig.push_back(PFMET->significance()); 
-     
+   //const Met& met = PFMET->at(0); 
+   if(PFMETs->size() > 0){
+     const pat::MET &themet = PFMETs->front();
+
+     tree_PFMet_et.push_back(themet.et());
+     tree_PFMet_pt.push_back(themet.pt()); 
+     tree_PFMet_eta.push_back(themet.eta()); 
+     tree_PFMet_phi.push_back(themet.phi()); 
+     tree_PFMet_sig.push_back(themet.significance()); 
+     }
   
 
 
@@ -1325,9 +1499,9 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_genParticle_statusCode.push_back(genParticle.status()); 
 
      ///FIX ME : maybe add the pdg id of mother 
-     //const Candidate * mom = genParticle.mother();
-     //tree_genParticle_mother.push_back(mom); 
-   
+     const Candidate * mom = genParticle.mother();
+     //tree_genParticle_mother_pdgId.push_back(mom->pdgId()); 
+     tree_genParticle_mother_pdgId.push_back( mom ? mom->pdgId() :  -1 );
     }
 
 
@@ -1358,10 +1532,10 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     /// Electrons 
 
-  /*  int nElectrons = electrons->size();
+    //int nElectrons = electronsPAT->size();
 
 
-    for (auto const & electron : *electrons)
+    for (auto const & electron : *electronsPAT)
     {
       tree_electron_pt.push_back(electron.pt());
       tree_electron_eta.push_back(electron.eta());
@@ -1370,7 +1544,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       tree_electron_vy.push_back(electron.vy());
       tree_electron_vz.push_back(electron.vz());
       tree_electron_energy.push_back(electron.energy());
-    }*/
+    }
 
 
     /// Muons 
@@ -1414,6 +1588,111 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     else (tree_muon_isStandAloneMuon.push_back(false));
     }
 
+  ////// chosing the best tracks for muons 
+   vector<const reco::Track*> muonTracks;
+   for (const auto& muon: *muons){
+     muonTracks.push_back(muon.bestTrack()); 
+   }
+
+    cout << "number of best track MUOOOOOONS "<<muonTracks.size() <<endl; 
+  
+   
+
+
+
+   //reco::BeamSpot vertexBeamSpot= *recoBeamSpotHandle;
+   edm::ESHandle<TransientTrackBuilder> theTransientTrackBuilder;
+   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTransientTrackBuilder);
+
+
+
+   /*** select your vertex ***/
+
+   // the following just takes the first one. With pile-up this is very likely not the right choice
+   const reco::Vertex* v=&(*vertices->begin()); 
+
+
+   /*** get the tracks from the vertex and build a new tracklist ***/
+   vector<reco::TransientTrack> mytracks;
+   TransientVertex transVtx;
+
+
+
+   //UNCOMMENT, just trying the same with o
+ 
+//  for(auto tv=v->tracks_begin(); tv!=v->tracks_end(); tv++)
+//  {
+//    const reco::TrackRef trackRef = tv->castTo<reco::TrackRef>();
+//
+//    /*** filter out some tracks ***/
+//    if (trackRef->dxy()>0.5) continue;
+//    //if (abs(trackRef->isSimMatched()==1) continue; 
+//    //if (abs(trackRef->dxy())>0.)
+//    // if(trackRef.key()==someothertrack.key()) continue;
+//
+//    /*** use all others for fitting, needs transient tracks ***/
+//    TransientTrack  transientTrack = theTransientTrackBuilder->build(trackRef); 
+//    transientTrack.setBeamSpot(vertexBeamSpot);
+//    mytracks.push_back(transientTrack);
+//  }
+
+
+  for (auto muonIterator=muonTracks.begin(); muonIterator!=muonTracks.end(); muonIterator++)
+  {
+    //const reco::TrackRef trackRef = (*muonIterator)->castTo<reco::TrackRef>();
+    //if (trackRef->dxy()>0.5) continue; 
+    if ((*muonIterator)->dxy()>0.5) continue; 
+    //TransientTrack  transientTrack = theTransientTrackBuilder->build(trackRef); 
+    TransientTrack  transientTrack = theTransientTrackBuilder->build(*muonIterator); 
+    //transientTrack.setBeamSpot(vertexBeamSpot);
+    mytracks.push_back(transientTrack);
+
+  }
+
+  
+  cout << "  --------- " <<endl;  
+  cout << "VERTEX REFITTING         "<<endl; 
+  cout << "initial size of tracks   "<< v->tracksSize() <<endl; 
+  cout << "size of kept tracks      "<<mytracks.size()<<endl; 
+//  /*** fit the vertex with the selected tracks ***/
+  if ( mytracks.size() > 1 )
+  {
+    
+    AdaptiveVertexFitter  theFitter;
+    /////theFitter->setWeightThreshold(0.001); //maybe one day, default threshhold is set to 0.01 
+    
+    //TransientVertex myVertex = theFitter.vertex(mytracks, vertexBeamSpot);  // if you want the beam constraint
+    TransientVertex myVertex = theFitter.vertex(mytracks);  // if you don't want the beam constraint
+    // now you have a new vertex, can e.g. be compared with the original
+    if (myVertex.isValid())
+    {    
+      std::cout << "OLD VERTEX X POS "<< v->position().x() << " NEW VERTEX X POS " << myVertex.position().x() << std::endl;
+      std::cout << "OLD VERTEX Y POS "<< v->position().y() << " NEW VERTEX Y POS " << myVertex.position().y() << std::endl;
+      std::cout << "OLD VERTEX CHI2  "<< v->chi2()         << " NEW VERTEX CHI2  " << myVertex.normalisedChiSquared()*myVertex.degreesOfFreedom()<< std::endl; 
+      tree_vtxRefittedWMuons_PosX.push_back(myVertex.position().x());
+      tree_vtxRefittedWMuons_PosY.push_back(myVertex.position().y());
+      tree_vtxRefittedWMuons_PosZ.push_back(myVertex.position().z());
+      tree_vtxRefittedWMuons_NChi2.push_back(myVertex.normalisedChiSquared());
+     
+    } 
+    else 
+    { 
+      cout << "Refitted vertex is not okay "<<endl; 
+      tree_vtxRefittedWMuons_PosX.push_back(-10.);
+      tree_vtxRefittedWMuons_PosY.push_back(-10.);
+      tree_vtxRefittedWMuons_PosZ.push_back(-10.);
+      tree_vtxRefittedWMuons_NChi2.push_back(-10.); 
+     
+    }
+    
+
+  //  std::cout << "TEST   " << v->position().z() << " " << transVtx.position().z() << std::endl;
+  }
+  else
+  {
+    std::cout << "not enough tracks left" <<std::endl;
+  }
+ 
 
 
 
@@ -2067,11 +2346,19 @@ void TrackingPerf::clearVariables() {
    tree_vtx_PosX.clear();
    tree_vtx_PosY.clear();
    tree_vtx_PosZ.clear();
+   tree_vtx_NChi2.clear(); 
 
 
    tree_vtx_PosXError.clear();
    tree_vtx_PosYError.clear();
    tree_vtx_PosZError.clear();
+
+
+   tree_vtxRefittedWMuons_PosX.clear();
+   tree_vtxRefittedWMuons_PosY.clear();
+   tree_vtxRefittedWMuons_PosZ.clear();
+   tree_vtxRefittedWMuons_NChi2.clear(); 
+
 
    tree_jet_pt.clear();
    tree_jet_eta.clear();
@@ -2081,12 +2368,12 @@ void TrackingPerf::clearVariables() {
    tree_jet_vz.clear();
 
 
-   tree_PFjet_pt.clear();
+   /*tree_PFjet_pt.clear();
    tree_PFjet_eta.clear();
    tree_PFjet_phi.clear();
    tree_PFjet_vx.clear();
    tree_PFjet_vy.clear();
-   tree_PFjet_vz.clear();
+   tree_PFjet_vz.clear();*/
 
    tree_PFMet_et.clear(); 
    tree_PFMet_pt.clear(); 
@@ -2107,6 +2394,7 @@ void TrackingPerf::clearVariables() {
    tree_genParticle_mass.clear();
    tree_genParticle_statusCode.clear(); 
    tree_genParticle_mother.clear(); 
+   tree_genParticle_mother_pdgId.clear();
 
 
    tree_genJet_pt.clear();

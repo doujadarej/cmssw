@@ -26,4 +26,5 @@
 <use   name="SimTracker/Records"/>
 <use   name="DataFormats/VertexReco"/>
 <use   name="DataFormats/JetReco"/>
+<use   name="RecoVertex/AdaptiveVertexFit"/>
 <flags EDM_PLUGIN="1"/>
