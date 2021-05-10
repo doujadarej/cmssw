@@ -11,5 +11,5 @@ git cms-addpkg TrackingPerf/TrackingPerf
 git cms-addpkg test 
 scramv1 b -j6 
 cd test 
-cp /opt/sbg/cms/ui3_data1/ddarej/NTupleCreator/CMSSW_10_6_0/src/test/step2.root .
-cmsRun step3_thebest.py
+cp /opt/sbg/cms/ui3_data1/ddarej/VertexReffiter_dev/CMSSW_10_6_0/src/step3/step2.root .
+cmsRun step3_GT_PU35.py
