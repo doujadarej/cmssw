@@ -128,7 +128,7 @@ process.MINIAODoutput = cms.OutputModule("PoolOutputModule",
 # Additional output definition
 
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("trackingNTuple.root") )
+process.TFileService = cms.Service("TFileService", fileName = cms.string("TrackingNTuple_data.root") )
 
 process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
       tracks                   = cms.untracked.InputTag('generalTracks'),
@@ -142,7 +142,7 @@ process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
       jetInput                 = cms.InputTag('slimmedJets'),
       caloJetInput             = cms.InputTag('ak4CaloJets'),
       ak8jetInput              = cms.InputTag('ak8PFJetsCHSSoftDrop'),
-      #ak8CaloJetInput          = cms.InputTag('ak8CaloJets'),
+      ak8CaloJetInput          = cms.InputTag('ak8CaloJets'),
       #pfmetInput               = cms.InputTag('pfMet'),
       genParticles             = cms.InputTag('genParticles'),
       genJetInput              = cms.InputTag("slimmedGenJets"),
@@ -163,6 +163,9 @@ process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
 
 )
 
+process.load("RecoJets.JetProducers.ak8CaloJets_cfi")
+
+
 process.TrackingPerfNtuple = cms.Path( 
 	#process.LHCTransport*
 	#process.g4SimHits*
@@ -180,6 +183,7 @@ process.TrackingPerfNtuple = cms.Path(
     #process.tightMuonsCandidateForZMuSkim *
     #process.tightMuonsForZMuSkim *
     #process.dimuonsZMuSkim *
+    process.ak8CaloJets*
 	process.trackingPerf
     )
 

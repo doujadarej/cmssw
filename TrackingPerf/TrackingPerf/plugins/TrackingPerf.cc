@@ -373,7 +373,7 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 
   const edm::EDGetTokenT<edm::View<reco::Jet> > ak8jetToken_;
-  //const edm::EDGetTokenT<edm::View<reco::Jet> > ak8CaloJetToken_;
+  const edm::EDGetTokenT<edm::View<reco::Jet> > ak8CaloJetToken_;
   
 
   
@@ -853,7 +853,7 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
 	jetToken_(             consumes<edm::View<reco::Jet> >(                  iConfig.getParameter<edm::InputTag>("jetInput"))),
 	caloJetToken_(         consumes<edm::View<reco::Jet> >(                  iConfig.getParameter<edm::InputTag>("caloJetInput"))),
 	ak8jetToken_(          consumes<edm::View<reco::Jet> >(                  iConfig.getParameter<edm::InputTag>("ak8jetInput"))),
-	//ak8CaloJetToken_(      consumes<edm::View<reco::Jet> >(                  iConfig.getParameter<edm::InputTag>("ak8CaloJetInput"))),
+	ak8CaloJetToken_(      consumes<edm::View<reco::Jet> >(                  iConfig.getParameter<edm::InputTag>("ak8CaloJetInput"))),
   	//thePFJetCollection_(   consumes<reco::PFJetCollection>(                  iConfig.getParameter<edm::InputTag>("pfJetCollection"))),
   	genParticlesToken_(    consumes<reco::GenParticleCollection>(            iConfig.getParameter<edm::InputTag>("genParticles"))),
   	genJetToken_(          consumes<reco::GenJetCollection>(                 iConfig.getParameter<edm::InputTag>("genJetInput"))),
@@ -1326,13 +1326,13 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<edm::View<reco::Jet> > jets;
    edm::Handle<edm::View<reco::Jet> > caloJets;
    edm::Handle<edm::View<reco::Jet> > ak8jets;
-   //edm::Handle<edm::View<reco::Jet> > ak8CaloJets;
+   edm::Handle<edm::View<reco::Jet> > ak8CaloJets;
    
    
    iEvent.getByToken(jetToken_,jets);  
    iEvent.getByToken(caloJetToken_,caloJets);  
    iEvent.getByToken(ak8jetToken_,ak8jets);  
-   //iEvent.getByToken(ak8CaloJetToken_,ak8CaloJets);  
+   iEvent.getByToken(ak8CaloJetToken_,ak8CaloJets);  
    
 
    edm::Handle<pat::METCollection> PFMETs;
@@ -1532,7 +1532,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::map<size_t , int > jetToTrackMap;
    std::map<size_t , int > caloJetToTrackMap;
    std::map<size_t , int > ak8jetToTrackMap;
-   //std::map<size_t , int > ak8caloJetToTrackMap;
+   std::map<size_t , int > ak8caloJetToTrackMap;
    std::map<size_t , int > trackToPFJetMap;
 
    ///// TRACK ASSOCIATION TO VERTICES AND JETS 
@@ -2434,17 +2434,17 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      tree_jet08_vz.push_back(jet.vz());
    }
 
-  // for(int ij=0;ij< int(ak8CaloJets->size()) ;ij++){
-  // 
-  //   const Jet& jet = ak8CaloJets->at(ij);
-  //   tree_Calojet08_E.push_back(jet.energy());
-  //   tree_Calojet08_pt.push_back(jet.pt());
-  //   tree_Calojet08_eta.push_back(jet.eta());
-  //   tree_Calojet08_phi.push_back(jet.phi());
-  //   tree_Calojet08_vx.push_back(jet.vx());
-  //   tree_Calojet08_vy.push_back(jet.vy());
-  //   tree_Calojet08_vz.push_back(jet.vz());
-  // }
+   for(int ij=0;ij< int(ak8CaloJets->size()) ;ij++){
+   
+     const Jet& jet = ak8CaloJets->at(ij);
+     tree_Calojet08_E.push_back(jet.energy());
+     tree_Calojet08_pt.push_back(jet.pt());
+     tree_Calojet08_eta.push_back(jet.eta());
+     tree_Calojet08_phi.push_back(jet.phi());
+     tree_Calojet08_vx.push_back(jet.vx());
+     tree_Calojet08_vy.push_back(jet.vy());
+     tree_Calojet08_vz.push_back(jet.vz());
+   }
 
    
     smalltree->Fill();

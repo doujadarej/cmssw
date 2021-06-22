@@ -1,4 +1,4 @@
-# Auto generated configuration file
+#Auto generated configuration file
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
@@ -171,7 +171,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2018_realistic', '
 
 ############### ADDING NTUPLE in output
 ###############################
-process.TFileService = cms.Service("TFileService", fileName = cms.string("TrackingNTuple.root") )
+process.TFileService = cms.Service("TFileService", fileName = cms.string("TrackingNTuple_MC.root") )
 
 
 process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
@@ -213,7 +213,7 @@ process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
       jetInput                 = cms.InputTag('slimmedJets'),
       caloJetInput             = cms.InputTag('ak4CaloJets'),
       ak8jetInput              = cms.InputTag('ak8PFJetsCHSSoftDrop'),
-      #ak8CaloJetInput          = cms.InputTag('ak8CaloJets'),
+      ak8CaloJetInput          = cms.InputTag('ak8CaloJets'),
       #pfmetInput               = cms.InputTag('pfMet'),
       genParticles             = cms.InputTag('genParticles'),
       genJetInput              = cms.InputTag("slimmedGenJets"),
@@ -234,7 +234,7 @@ process.trackingPerf = cms.EDAnalyzer('TrackingPerf',
 
 )
 
-#process.load("RecoJets.JetProducers.ak8CaloJets_cfi")
+process.load("RecoJets.JetProducers.ak8CaloJets_cfi")
 
 process.TrackingPerfNtuple = cms.Path( 
 	#process.LHCTransport*
@@ -254,7 +254,7 @@ process.TrackingPerfNtuple = cms.Path(
         process.tightMuonsCandidateForZMuSkim *
         process.tightMuonsForZMuSkim *
         process.dimuonsZMuSkim *
-	#process.ak8CaloJets*
+	process.ak8CaloJets*
 	process.trackingPerf)
 
 
