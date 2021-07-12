@@ -616,7 +616,14 @@ class TrackingPerf : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<float> tree_vtxRefittedWMuons_PosYError;	
   std::vector<float> tree_vtxRefittedWMuons_PosZError; 
   
-  
+  //secondary vertices 
+   
+  std::vector<float> tree_secondaryVtx_diff_X; 
+  std::vector<float> tree_secondaryVtx_diff_Y;
+  std::vector<float> tree_secondaryVtx_diff_Z;
+  std::vector<int> tree_secondaryVtx_nTracks;
+  std::vector<int> tree_secondaryVtx_isValid; 
+  std::vector<float> tree_secondaryVtx_NChi2; 
  //--------------------------------
  // jet infos ------- 
  //--------------------------------
@@ -962,7 +969,14 @@ TrackingPerf::TrackingPerf(const edm::ParameterSet& iConfig):
    smalltree->Branch("tree_vtxRefittedWMuons_PosZ", &tree_vtxRefittedWMuons_PosZ); 
    smalltree->Branch("tree_vtxRefittedWMuons_NChi2", &tree_vtxRefittedWMuons_NChi2);
    smalltree->Branch("tree_vtxRefittedWMuons_nTracks", &tree_vtxRefittedWMuons_nTracks);
-  
+ 
+   //  secondary vertices 
+   smalltree->Branch("tree_secondaryVtx_diff_X", &tree_secondaryVtx_diff_X);
+   smalltree->Branch("tree_secondaryVtx_diff_Y", &tree_secondaryVtx_diff_Y);
+   smalltree->Branch("tree_secondaryVtx_diff_Z", &tree_secondaryVtx_diff_Z); 
+   smalltree->Branch("tree_secondaryVtx_nTracks", &tree_secondaryVtx_nTracks); 
+   smalltree->Branch("tree_secondaryVtx_isValid", &tree_secondaryVtx_isValid); 
+   smalltree->Branch("tree_secondaryVtx_NChi2", &tree_secondaryVtx_NChi2); 
   //  int runNumber,eventNumber,lumiBlock;
   //
   
@@ -1134,6 +1148,11 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace std;
 
 
+
+   std::cout << "---------------------------"  << std::endl;
+   std::cout << "---------------------------"  << std::endl;
+   std::cout << "---------------------------"  << std::endl;
+   std::cout << "---------------------------"  << std::endl;
 
    runNumber = iEvent.id().run();
    std::cout << "runNumber = " << runNumber << std::endl;
@@ -1625,7 +1644,7 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     ///OUTPUT MESSAGES 
 
-    std::cout << "---------------------------"  << std::endl;
+
     std::cout << "number of reco tracks      "  << nRecoTracks <<std::endl;
     std::cout << "number of primary vertices "  << nPV <<std::endl;
     std::cout << "number of jets             "  << nJet <<std::endl;
@@ -2114,12 +2133,18 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   int n_matchedrecotracks=0; 
   int n_goodtracks=0; 
 
-  //double top1_x=0; 
-  //double top1_y=0; 
-  //double top1_z=0; 
-  //double top2_x=0; 
-  //double top2_y=0; 
-  //double top2_z=0; 
+   float secondaryVtx_diff_X = -1.; 
+   float secondaryVtx_diff_Y = -1.;    
+   float secondaryVtx_diff_Z = -1.; 
+   int secondaryVtx_nTracks = -1; 
+   int secondaryVtx_isValid = -3; 
+   float secondaryVtx_NChi2=-1000; 
+   float top1_x=0; 
+   float top1_y=0; 
+   float top1_z=0; 
+   float top2_x=0; 
+   float top2_y=0; 
+   float top2_z=0; 
 
   for (auto genIterator=genParticles->begin(); genIterator!=genParticles->end(); genIterator++) //loop on gen particles
   {
@@ -2127,12 +2152,12 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if (abs(genIterator->pdgId())==6 && genIterator->status()==22) //if the gen particle is a displaced top 
     { 
       n_displacedtop++; 
-      int num_track=0; 
+      int num_track=-1; 
       if (n_displacedtop==1) 
       {
-        //top1_x=genIterator->vx(); 
-        //top1_y=genIterator->vy(); 
-        //top1_z=genIterator->vz(); 
+        top1_x=genIterator->vx(); 
+        top1_y=genIterator->vy(); 
+        top1_z=genIterator->vz(); 
         cout << "FIRST TOP GEN VERTEX X "<<genIterator->vx()<<endl; 
         cout << "FIRST TOP GEN VERTEX Y "<<genIterator->vy()<<endl; 
         cout << "FIRST TOP GEN VERTEX Z "<<genIterator->vz()<<endl; 
@@ -2140,9 +2165,10 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if (n_displacedtop==2) 
       {
-        //top2_x=genIterator->vx(); 
-        //top2_y=genIterator->vy(); 
-        //top2_z=genIterator->vz(); 
+        top2_x=genIterator->vx(); 
+        top2_y=genIterator->vy(); 
+        top2_z=genIterator->vz(); 
+        cout << "------------------------" <<endl; 
         cout << "SECOND TOP GEN VERTEX X "<<genIterator->vx()<<endl; 
         cout << "SECOND TOP GEN VERTEX Y "<<genIterator->vy()<<endl; 
         cout << "SECOND TOP GEN VERTEX Z "<<genIterator->vz()<<endl; 
@@ -2155,44 +2181,65 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //cout << "num track "<<num_track<<endl; 
         //cout <<"reco track is sim matched " << tree_track_isSimMatched[num_track] <<endl; 
         num_track++; 
-        if (tree_track_isSimMatched[num_track-1]==0) continue; //keeping only the reco tracks matched to sim tracks 
+        if (tree_track_isSimMatched[num_track]==0) continue; //keeping only the reco tracks matched to sim tracks 
         n_matchedrecotracks+=1; 
-        if (abs(tree_track_genVertexPos_X[num_track-1]-genIterator->vx())<0.01 && abs(tree_track_genVertexPos_Y[num_track-1]-genIterator->vy())<0.01 && abs(tree_track_genVertexPos_Z[num_track-1]-genIterator->vz())<0.01) //if the position of the sim track associated to the reco track is the same as the gen top vertex
+        if (abs(tree_track_genVertexPos_X[num_track]-genIterator->vx())<0.01 && abs(tree_track_genVertexPos_Y[num_track]-genIterator->vy())<0.01 && abs(tree_track_genVertexPos_Z[num_track]-genIterator->vz())<0.01) //if the position of the sim track associated to the reco track is the same as the gen top vertex
         {
           //to erase
           if (n_displacedtop==1) 
           {
-            cout << "first top track x "<< tree_track_genVertexPos_X[num_track-1] << " track y "<< tree_track_genVertexPos_Y[num_track-1] << " track z "<< tree_track_genVertexPos_Z[num_track-1] <<endl; 
-            cout << "first top track first hit x "<<tree_track_firsthit_X[num_track-1]<<" first hit y "<<tree_track_firsthit_Y[num_track-1] << " first track z "<<tree_track_firsthit_Z[num_track-1] <<endl; 
+            cout << "first top track x "<< tree_track_genVertexPos_X[num_track] << " track y "<< tree_track_genVertexPos_Y[num_track] << " track z "<< tree_track_genVertexPos_Z[num_track] <<endl; 
+            cout << "first top track first hit x "<<tree_track_firsthit_X[num_track]<<" first hit y "<<tree_track_firsthit_Y[num_track] << " first hit z "<<tree_track_firsthit_Z[num_track] <<endl; 
           }
           if (n_displacedtop==2) 
           {
-            cout << "second top track x "<< tree_track_genVertexPos_X[num_track-1] << " track y "<< tree_track_genVertexPos_Y[num_track-1] << " track z "<< tree_track_genVertexPos_Z[num_track-1] <<endl; 
-            cout << "second top track first hit x "<<tree_track_firsthit_X[num_track-1]<<" second hit y "<<tree_track_firsthit_Y[num_track-1] << " second track z "<<tree_track_firsthit_Z[num_track-1] <<endl;
+            cout << "second top track x "<< tree_track_genVertexPos_X[num_track] << " track y "<< tree_track_genVertexPos_Y[num_track] << " track z "<< tree_track_genVertexPos_Z[num_track] <<endl; 
+            cout << "second top track first hit x "<<tree_track_firsthit_X[num_track]<<" first hit y "<<tree_track_firsthit_Y[num_track] << " first hit z "<<tree_track_firsthit_Z[num_track] <<endl;
           }
 
 
-
-
+         // cout << "------------------------" <<endl;
+         // cout << "keeeeeeeept traaaaaaacks" <<endl; 
+          
 
           TransientTrack  transientTrack = theTransientTrackBuilder->build(*trackIterator); 
+          //uncomment if want to take all of the tracks 
           if (n_displacedtop==1) displacedTracks_top1.push_back(transientTrack);
           if (n_displacedtop==2) displacedTracks_top2.push_back(transientTrack); 
+          //chosing only tracks  that have close genVertex and first hit position 
+          //if (n_displacedtop==1 && abs(tree_track_genVertexPos_X[num_track]-tree_track_firsthit_X[num_track])<5 && abs(tree_track_genVertexPos_Y[num_track]-tree_track_firsthit_Y[num_track])<5 && abs(tree_track_genVertexPos_Z[num_track]-tree_track_firsthit_Z[num_track])<5) 
+          //{
+          //  displacedTracks_top1.push_back(transientTrack);
+          //  cout << "kept first top track first hit x "<<tree_track_firsthit_X[num_track]<<" first hit y "<<tree_track_firsthit_Y[num_track] << " first hit z "<<tree_track_firsthit_Z[num_track] <<endl;  
+          //} 
+          //if (n_displacedtop==2 && abs(tree_track_genVertexPos_X[num_track]-tree_track_firsthit_X[num_track])<5 && abs(tree_track_genVertexPos_Y[num_track]-tree_track_firsthit_Y[num_track])<5 && abs(tree_track_genVertexPos_Z[num_track]-tree_track_firsthit_Z[num_track])<5) 
+          //{
+          //  displacedTracks_top2.push_back(transientTrack);
+          //  cout << "kept first top track first hit x "<<tree_track_firsthit_X[num_track]<<" first hit y "<<tree_track_firsthit_Y[num_track] << " first hit z "<<tree_track_firsthit_Z[num_track] <<endl;  
+          //}
+
           n_goodtracks+=1; 
         }
       }
     }
   }
 
-  cout << "Number of displaced tops "<<n_displacedtop<<endl; 
+
+
+  //cout << "Number of displaced tops "<<n_displacedtop<<endl; 
+  cout << "------------------------" <<endl;
   cout << "Number of reco tracks for first top "<<displacedTracks_top1.size()<<endl; 
   cout << "Number of reco tracks for second top "<<displacedTracks_top2.size()<<endl; 
 
 
   if ( displacedTracks_top1.size() > 1 )
   {
-    KalmanVertexFitter theFitter_top1; 
-    //AdaptiveVertexFitter  theFitter_top1;
+    auto lineariser = DefaultLinearizationPointFinder();
+    auto linearization_point = lineariser.getLinearizationPoint(displacedTracks_top1);
+    std::cout << "seed is: " << linearization_point.x() << " - " << linearization_point.y() << " - " << linearization_point.z() << '\n';
+
+    //KalmanVertexFitter theFitter_top1; 
+    AdaptiveVertexFitter  theFitter_top1;
     //theFitter_top1.setWeightThreshold(0.000001); //maybe one day, default threshhold is set to 0.01 
     
     
@@ -2201,29 +2248,57 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // now you have a new vertex, can e.g. be compared with the original
     if (displacedVertex_top1.isValid())
     {    
+      cout << "------------------------" <<endl;
       std::cout << " FIRST TOP DISPLACED VERTEX X POS " << displacedVertex_top1.position().x() << std::endl;
       std::cout << " FIRST TOP DISPLACED VERTEX Y POS " << displacedVertex_top1.position().y() << std::endl;
       std::cout << " FIRST TOP DISPLACED VERTEX Z POS " << displacedVertex_top1.position().z() << std::endl; 
-      std::cout << " FIRST TOP DISPLACED VERTEX CHI2  " << displacedVertex_top1.normalisedChiSquared()*displacedVertex_top1.degreesOfFreedom()<< std::endl; 
+      std::cout << " FIRST TOP DISPLACED VERTEX CHI2/ndof  " << displacedVertex_top1.normalisedChiSquared()<< std::endl; 
+      std::cout << " NUMBER OF ORIGINAL TRACKS        " << displacedVertex_top1.originalTracks().size() << std::endl; 
+      
+   secondaryVtx_diff_X = abs(displacedVertex_top1.position().x()-top1_x);
+   secondaryVtx_diff_Y = abs(displacedVertex_top1.position().x()-top1_y);
+   secondaryVtx_diff_Z = abs(displacedVertex_top1.position().x()-top1_z);
+   secondaryVtx_nTracks = displacedVertex_top1.originalTracks().size();
+   secondaryVtx_isValid = 1;
+   secondaryVtx_NChi2 = displacedVertex_top1.normalisedChiSquared();
 
-     
+
+    tree_secondaryVtx_diff_X.push_back(secondaryVtx_diff_X);
+    tree_secondaryVtx_diff_Y.push_back(secondaryVtx_diff_Y);
+    tree_secondaryVtx_diff_Z.push_back(secondaryVtx_diff_Z);
+    tree_secondaryVtx_nTracks.push_back(secondaryVtx_nTracks); 
+    tree_secondaryVtx_isValid.push_back(secondaryVtx_isValid);
+    tree_secondaryVtx_NChi2.push_back(secondaryVtx_NChi2);
+
+
+     for( auto const& track : displacedVertex_top1.originalTracks() ) { std::cout << "Track weight: " << displacedVertex_top1.trackWeight(track) << '\n';}  
     } 
     else 
     { 
+      cout << "------------------------" <<endl;
       cout << "Refitted vertex for top 1 is not okay "<<endl;
-     
+      secondaryVtx_isValid=0; 
+      tree_secondaryVtx_isValid.push_back(secondaryVtx_isValid);
+      for( auto const& track : displacedVertex_top1.originalTracks() ) { std::cout << "Track weight: " << displacedVertex_top1.trackWeight(track) << '\n';} 
     }
   }
   else
   {
+    cout << "------------------------" <<endl;
     std::cout << "not enough tracks left for top 1" <<std::endl;
+    secondaryVtx_isValid=-1;
+    tree_secondaryVtx_isValid.push_back(secondaryVtx_isValid);
   }
 
 
   if ( displacedTracks_top2.size() > 1 )
-  {
-    KalmanVertexFitter theFitter_top2; 
-    //AdaptiveVertexFitter  theFitter_top2;
+  { 
+    auto lineariser = DefaultLinearizationPointFinder();
+    auto linearization_point = lineariser.getLinearizationPoint(displacedTracks_top2);
+    std::cout << "seed is: " << linearization_point.x() << " - " << linearization_point.y() << " - " << linearization_point.z() << '\n';
+    
+    //KalmanVertexFitter theFitter_top2; 
+    AdaptiveVertexFitter  theFitter_top2;
     //theFitter_top2.setWeightThreshold(0.00001); //maybe one day, default threshhold is set to 0.01 
     
     
@@ -2232,21 +2307,47 @@ TrackingPerf::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // now you have a new vertex, can e.g. be compared with the original
     if (displacedVertex_top2.isValid())
     {    
+      cout << "------------------------" <<endl;
       std::cout << " SECOND TOP DISPLACED VERTEX X POS " << displacedVertex_top2.position().x() << std::endl;
       std::cout << " SECOND TOP DISPLACED VERTEX Y POS " << displacedVertex_top2.position().y() << std::endl;
       std::cout << " SECOND TOP DISPLACED VERTEX Z POS " << displacedVertex_top2.position().z() << std::endl; 
-      std::cout << " SECOND TOP DISPLACED VERTEX CHI2  " << displacedVertex_top2.normalisedChiSquared()*displacedVertex_top2.degreesOfFreedom()<< std::endl; 
+      std::cout << " SECOND TOP DISPLACED VERTEX CHI2/ndof  " << displacedVertex_top2.normalisedChiSquared()<< std::endl; 
+      std::cout << " NUMBER OF ORIGINAL TRACKS        " << displacedVertex_top2.originalTracks().size() << std::endl;
+ 
 
-     
+
+   secondaryVtx_diff_X = abs(displacedVertex_top2.position().x()-top2_x);
+   secondaryVtx_diff_Y = abs(displacedVertex_top2.position().x()-top2_y);
+   secondaryVtx_diff_Z = abs(displacedVertex_top2.position().x()-top2_z);
+   secondaryVtx_nTracks = displacedVertex_top2.originalTracks().size();
+   secondaryVtx_isValid = 1;
+   secondaryVtx_NChi2 = displacedVertex_top2.normalisedChiSquared();
+
+
+    tree_secondaryVtx_diff_X.push_back(secondaryVtx_diff_X);
+    tree_secondaryVtx_diff_Y.push_back(secondaryVtx_diff_Y);
+    tree_secondaryVtx_diff_Z.push_back(secondaryVtx_diff_Z);
+    tree_secondaryVtx_nTracks.push_back(secondaryVtx_nTracks); 
+    tree_secondaryVtx_isValid.push_back(secondaryVtx_isValid);
+    tree_secondaryVtx_NChi2.push_back(secondaryVtx_NChi2);
+
+
+      for( auto const& track : displacedVertex_top2.originalTracks() ) { std::cout << "Track weight: " << displacedVertex_top2.trackWeight(track) << '\n';}
     } 
     else 
-    { 
+    {
+      secondaryVtx_isValid=0;
+      tree_secondaryVtx_isValid.push_back(secondaryVtx_isValid);
+      cout << "------------------------" <<endl;
       cout << "Refitted vertex for top 2 is not okay "<<endl;
-     
+      for( auto const& track : displacedVertex_top2.originalTracks() ) { std::cout << "Track weight: " << displacedVertex_top2.trackWeight(track) << '\n';}    
     }
   }
   else
   {
+    secondaryVtx_isValid=-1;
+    tree_secondaryVtx_isValid.push_back(secondaryVtx_isValid);
+    cout << "------------------------" <<endl;
     std::cout << "not enough tracks left for top 2" <<std::endl;
   }
 
@@ -2538,6 +2639,11 @@ void TrackingPerf::clearVariables() {
    tree_vtxRefittedWMuons_NChi2.clear(); 
    tree_vtxRefittedWMuons_nTracks.clear(); 
 
+   tree_secondaryVtx_diff_X.clear(); 
+   tree_secondaryVtx_diff_Y.clear(); 
+   tree_secondaryVtx_diff_Z.clear(); 
+   tree_secondaryVtx_nTracks.clear(); 
+   tree_secondaryVtx_isValid.clear(); 
 
    tree_jet_pt.clear();
    tree_jet_eta.clear();
